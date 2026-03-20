@@ -152,25 +152,7 @@ export default function AdminDashboard(){
             ))}
 
           </section>
-
-          {/* USER SIDE COMPLAINT HISTORY */}
-          <section className="dashboard-panel">
-            <div className="panel-head">
-              <h2 className="panel-title">Complaint History (User Side)</h2>
-              <p className="panel-sub">Summary of current user complaints for quick review.</p>
-            </div>
-
-            <div className="dashboard-table-wrap">
-              <pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', margin: 0 }}>
------------------------------------------------
-| Complaint        | Status                 |
------------------------------------------------
-{userHistory.map(item => `| ${item.complaint.padEnd(16)} | ${item.statusText.padEnd(22)} |\n`).join('')}
------------------------------------------------
-              </pre>
-            </div>
-          </section>
-
+          
           {/* RECENT ACTIVITY */}
 
           <section className="dashboard-panel">
