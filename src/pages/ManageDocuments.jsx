@@ -368,7 +368,7 @@ export default function ManageDocuments(){
                     <tr key={it.request_id}>
                       <td>{it.reference_number || it.request_id}</td>
                       <td>{it.document_type || it.document}</td>
-                      <td>{it.resident_id || '—'}</td>
+                      <td>{it.name || it.resident_id || '—'}</td>
                       <td>{new Date(it.date_requested || Date.now()).toLocaleDateString()}</td>
                       <td><StatusBadge status={it.status}/></td>
                       <td>

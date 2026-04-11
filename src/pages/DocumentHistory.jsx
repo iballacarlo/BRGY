@@ -37,6 +37,7 @@ export default function DocumentHistory(){
                 <thead>
                   <tr>
                     <th>Reference</th>
+                    <th>Resident</th>
                     <th>Type</th>
                     <th>Date</th>
                     <th>Status</th>
@@ -47,6 +48,7 @@ export default function DocumentHistory(){
                   {data.map(d => (
                     <tr key={d.request_id}>
                       <td>{d.reference_number}</td>
+                      <td>{d.name || d.resident_id || '—'}</td>
                       <td>{d.document_type}</td>
                       <td>{new Date(d.date_requested).toLocaleDateString()}</td>
                       <td>{d.status}</td>
