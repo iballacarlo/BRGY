@@ -5,6 +5,7 @@ const map = {
   approved: 'green',
   resolved: 'green',
   pending: 'yellow',
+  frozen: 'blue',
   rejected: 'red',
   review: 'blue'
 }

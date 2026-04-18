@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import Button from '../components/Button'
@@ -14,6 +14,7 @@ const DOC_TYPES = [
   'Certificate of Residency',
   'Certificate of Indigency',
 ]
+const STORAGE_DOCUMENT_TYPES_KEY = 'admin_disabled_document_types'
 
 export default function DocumentRequest(){
   const [type, setType] = useState('Barangay Clearance')
@@ -24,6 +25,25 @@ export default function DocumentRequest(){
   const [street, setStreet] = useState('')
   const [block, setBlock] = useState('')
   const [lot, setLot] = useState('')
+  const [disabledDocumentTypes, setDisabledDocumentTypes] = useState({})
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_DOCUMENT_TYPES_KEY)
+      const parsed = stored ? JSON.parse(stored) : {}
+      setDisabledDocumentTypes(parsed)
+      const allowedDocTypes = DOC_TYPES.filter(docType => !parsed[docType])
+      if(allowedDocTypes.length > 0){
+        if(!allowedDocTypes.includes(type)){
+          setType(allowedDocTypes[0])
+        }
+      } else {
+        setType('')
+      }
+    } catch {
+      setDisabledDocumentTypes({})
+    }
+  }, [])
 
   const formatMmDdYyyy = (value) => {
     const date = new Date(value)
@@ -55,6 +75,8 @@ export default function DocumentRequest(){
     setType(next)
     setErrors(prev => ({ ...prev, type: undefined, businessName: undefined }))
   }
+
+  const availableDocTypes = DOC_TYPES.filter(docType => !disabledDocumentTypes[docType])
 
   async function submitToApi(){
     try {
@@ -295,19 +317,25 @@ export default function DocumentRequest(){
                 Document Type <span className="req">*</span>
               </label>
               <div className="form-field">
-                <div className={`type-chips ${errors.type ? 'type-chips-error' : ''}`} role="group" aria-label="Document type">
-                  {DOC_TYPES.map(t => (
-                    <button
-                      key={t}
-                      type="button"
-                      className={`type-chip ${type === t ? 'active' : ''}`}
-                      onClick={() => onPickType(t)}
-                      aria-pressed={type === t}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
+                {availableDocTypes.length === 0 ? (
+                  <div className="field-error">
+                    No document types are currently available. Please contact the barangay office.
+                  </div>
+                ) : (
+                  <div className={`type-chips ${errors.type ? 'type-chips-error' : ''}`} role="group" aria-label="Document type">
+                    {availableDocTypes.map(t => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`type-chip ${type === t ? 'active' : ''}`}
+                        onClick={() => onPickType(t)}
+                        aria-pressed={type === t}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {errors.type && <div className="field-error">{errors.type}</div>}
               </div>
 
@@ -327,7 +355,7 @@ export default function DocumentRequest(){
             </div>
 
             <div className="form-actions">
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={availableDocTypes.length === 0}>Submit</Button>
             </div>
           </form>
 

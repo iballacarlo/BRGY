@@ -5,11 +5,25 @@ import Button from '../components/Button'
 import '../styles/form.css'
 import { Settings, Tags, Save, RotateCcw } from 'lucide-react'
 
+const ALL_DOCUMENT_TYPES = [
+  'Barangay Clearance',
+  'Certificate of Residency',
+  'Certificate of Indigency'
+]
+const STORAGE_DOCUMENT_TYPES_KEY = 'admin_disabled_document_types'
+
 export default function AdminSettings(){
   const [categories, setCategories] = useState(['Noise', 'Garbage', 'Traffic'])
   const [newCat, setNewCat] = useState('')
   const [systemName, setSystemName] = useState('City of Bacoor')
   const [contactEmail, setContactEmail] = useState('admin@bacoor.gov.ph')
+  const [disabledDocumentTypes, setDisabledDocumentTypes] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_DOCUMENT_TYPES_KEY) || '{}')
+    } catch {
+      return {}
+    }
+  })
 
   function addCategory(){
     const v = newCat.trim()
@@ -28,9 +42,21 @@ export default function AdminSettings(){
     setNewCat('')
     setSystemName('City of Bacoor')
     setContactEmail('admin@bacoor.gov.ph')
+    setDisabledDocumentTypes({})
+    localStorage.removeItem(STORAGE_DOCUMENT_TYPES_KEY)
+  }
+
+  function toggleDocumentType(type){
+    setDisabledDocumentTypes(prev => {
+      const next = { ...prev, [type]: !prev[type] }
+      if(!next[type]) delete next[type]
+      localStorage.setItem(STORAGE_DOCUMENT_TYPES_KEY, JSON.stringify(next))
+      return next
+    })
   }
 
   function save(){
+    localStorage.setItem(STORAGE_DOCUMENT_TYPES_KEY, JSON.stringify(disabledDocumentTypes))
     alert('Settings saved (demo).')
   }
 
@@ -178,6 +204,37 @@ export default function AdminSettings(){
 
                 <div className="helper" style={{ marginTop: 10 }}>
                   These categories will appear in the complaint form.
+                </div>
+              </div>
+
+              <label className="form-label">Document Visibility</label>
+              <div className="form-field">
+                {ALL_DOCUMENT_TYPES.map((docType) => (
+                  <div
+                    key={docType}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                      padding: '10px 12px',
+                      borderRadius: 12,
+                      border: '1px solid rgba(0,0,0,0.10)',
+                      background: 'rgba(255,255,255,0.65)'
+                    }}
+                  >
+                    <span>{docType}</span>
+                    <Button
+                      type="button"
+                      variant={disabledDocumentTypes[docType] ? 'secondary' : 'primary'}
+                      onClick={() => toggleDocumentType(docType)}
+                    >
+                      {disabledDocumentTypes[docType] ? 'Enable' : 'Disable'}
+                    </Button>
+                  </div>
+                ))}
+                <div className="helper" style={{ marginTop: 10 }}>
+                  Disabled document types are hidden from resident document requests.
                 </div>
               </div>
             </div>

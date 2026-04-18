@@ -278,6 +278,44 @@ const api = {
     save(KEY_DOCS, list)
 
     return { success:true, data:list[idx] }
+  },
+
+  updateDoc(id, data){
+    const list = load(KEY_DOCS)
+    const idx = list.findIndex(item => {
+      const isEqual = v => v === id || String(v) === String(id)
+      return isEqual(item.id) || isEqual(item.request_id) || isEqual(item.numericId)
+    })
+
+    if(idx === -1){
+      return { success:false, message:'Document request not found' }
+    }
+
+    list[idx] = {
+      ...list[idx],
+      ...data,
+      updated_at: nowIso()
+    }
+    save(KEY_DOCS, list)
+
+    return { success:true, data:list[idx] }
+  },
+
+  deleteDoc(id){
+    const list = load(KEY_DOCS)
+    const idx = list.findIndex(item => {
+      const isEqual = v => v === id || String(v) === String(id)
+      return isEqual(item.id) || isEqual(item.request_id) || isEqual(item.numericId)
+    })
+
+    if(idx === -1){
+      return { success:false, message:'Document request not found' }
+    }
+
+    const [removed] = list.splice(idx, 1)
+    save(KEY_DOCS, list)
+
+    return { success:true, data: removed }
   }
 }
 

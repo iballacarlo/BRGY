@@ -29,12 +29,16 @@ export default function ManageDocuments(){
     { name: 'Residency Certificate', status: 'Disabled' }
   ])
   const [processingRequest, setProcessingRequest] = useState(null)
+  const [modalMode, setModalMode] = useState(null)
+  const [formErrors, setFormErrors] = useState({})
   const [documentFields, setDocumentFields] = useState({
+    document_type: 'Barangay Clearance',
     name: '',
     birthdate: '',
     address: '',
     purpose: '',
     business_name: '',
+    notes: '',
     province: '',
     barangay: ''
   })
@@ -47,14 +51,115 @@ export default function ManageDocuments(){
     ))
   }
 
+  const openAddRequest = () => {
+    setModalMode('add')
+    setProcessingRequest(null)
+    setDocumentFields({
+      document_type: requestType,
+      name: '',
+      birthdate: '',
+      address: '',
+      purpose: '',
+      business_name: '',
+      notes: '',
+      province: 'Cavite',
+      barangay: 'Mambog II',
+      status: 'Submitted'
+    })
+    setFormErrors({})
+  }
+
+  const openEditRequest = (item) => {
+    setModalMode('edit')
+    setProcessingRequest(item)
+    setDocumentFields(buildDocumentFields(item))
+    setFormErrors({})
+  }
+
+  const handleDeleteRequest = async (item) => {
+    if(!item) return
+    const shouldDelete = window.confirm('Delete this document request?')
+    if(!shouldDelete) return
+
+    mockApi.deleteDoc(item.request_id)
+    try {
+      await api.delete(`/docs/${item.request_id}`)
+    } catch {
+      // ignore backend failures for mock storage
+    }
+    load()
+  }
+
+  const validateDocumentForm = () => {
+    const errors = {}
+    if(!documentFields.document_type) errors.document_type = 'Document type is required'
+    if(!documentFields.name?.trim()) errors.name = 'Name is required'
+    if(!documentFields.address?.trim()) errors.address = 'Address is required'
+    if(!documentFields.purpose?.trim()) errors.purpose = 'Purpose is required'
+    if(documentFields.document_type === 'Business Permit' && !documentFields.business_name?.trim()) {
+      errors.business_name = 'Business name is required'
+    }
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const handleSaveRequest = async () => {
+    if(!validateDocumentForm()) return
+
+    const payload = {
+      document_type: documentFields.document_type,
+      type: documentFields.document_type,
+      name: documentFields.name,
+      birthdate: documentFields.birthdate,
+      address: documentFields.address,
+      purpose: documentFields.purpose,
+      business_name: documentFields.business_name,
+      notes: documentFields.notes,
+      status: documentFields.status || 'Submitted'
+    }
+
+    try {
+      if(modalMode === 'add'){
+        mockApi.addDoc(payload)
+        await api.post('/docs', {
+          document_type: payload.document_type,
+          purpose: payload.purpose,
+          name: payload.name,
+          birthdate: payload.birthdate,
+          address: payload.address,
+          business_name: payload.business_name
+        }).catch(() => {})
+        load()
+        alert('Document request added.')
+      } else if(modalMode === 'edit' && processingRequest){
+        mockApi.updateDoc(processingRequest.request_id, payload)
+        try {
+          await api.put(`/docs/${processingRequest.request_id}`, { status: payload.status })
+        } catch {
+          // backend edit not supported beyond status update
+        }
+        load()
+        alert('Document request updated.')
+      }
+    } catch(err){
+      alert('Failed to save request: ' + (err?.message || 'Unknown error'))
+    }
+
+    closeProcessingModal()
+  }
+
   async function load(){
     setLoading(true)
 
     try{
-      const data = mockApi.listDocs() // local version of data, keep consistent with mock API
-      setItems(data || [])
+      const response = await api.get('/docs')
+      if(response.data?.success){
+        setItems(response.data.data || [])
+      } else {
+        setItems(mockApi.listDocs() || [])
+      }
     }catch(err){
-      setError(err?.message || 'Failed to load')
+      setItems(mockApi.listDocs() || [])
     }
 
     setLoading(false)
@@ -142,16 +247,20 @@ export default function ManageDocuments(){
   }
 
   const buildDocumentFields = (item) => ({
+    document_type: item.document_type || item.type || requestType || 'Barangay Clearance',
     name: item.name || item.resident_name || item.requester_name || '',
     birthdate: item.birthdate || '',
     address: item.address || item.business_address || '',
     purpose: item.purpose || `Request for ${item.document_type || item.type || ''}`,
     business_name: item.business_name || item.document_name || '',
+    notes: item.notes || '',
     province: 'Cavite',
-    barangay: 'Mambog II'
+    barangay: 'Mambog II',
+    status: item.status || 'Submitted'
   })
 
   const handleProcessRequest = (item) => {
+    setModalMode('process')
     setProcessingRequest(item)
     setDocumentFields(buildDocumentFields(item))
   }
@@ -162,6 +271,8 @@ export default function ManageDocuments(){
 
   const closeProcessingModal = () => {
     setProcessingRequest(null)
+    setModalMode(null)
+    setFormErrors({})
   }
 
   const wrapText = (text, maxChars = 72) => {
@@ -332,7 +443,9 @@ export default function ManageDocuments(){
     setProcessingRequest(null)
   }
 
-  const processingTemplate = processingRequest ? getTemplateForType(processingRequest.document_type || processingRequest.type) : 'Barangay Clearance'
+  const processingTemplate = processingRequest
+    ? getTemplateForType(processingRequest.document_type || processingRequest.type)
+    : getTemplateForType(documentFields.document_type || requestType)
 
   return(
     <div className="app-shell">
@@ -342,7 +455,10 @@ export default function ManageDocuments(){
         <Header/>
 
         <main>
-          <h1 className="page-title">Manage Documents</h1>
+          <div className="page-heading-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+            <h1 className="page-title">Manage Documents</h1>
+            <Button variant="secondary" onClick={openAddRequest}>Add Request</Button>
+          </div>
 
           {error && <div className="field-error">{error}</div>}
 
@@ -364,20 +480,18 @@ export default function ManageDocuments(){
                 </thead>
 
                 <tbody>
-                  {items.map(it=>(
-                    <tr key={it.request_id}>
+                  {items.map((it, idx)=>(
+                    <tr key={it.reference_number || it.request_id || it.id || it.numericId || idx}>
                       <td>{it.reference_number || it.request_id}</td>
                       <td>{it.document_type || it.document}</td>
                       <td>{it.name || it.resident_id || '—'}</td>
                       <td>{new Date(it.date_requested || Date.now()).toLocaleDateString('en-US')}</td>
                       <td><StatusBadge status={it.status}/></td>
                       <td>
-                        <div className="table-actions-inline">
-                          <Button
-                            onClick={()=>handleProcessRequest(it)}
-                          >
-                            Process
-                          </Button>
+                        <div className="table-actions-inline" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          <Button onClick={()=>handleProcessRequest(it)}>Process</Button>
+                          <Button variant="secondary" onClick={() => openEditRequest(it)}>Edit</Button>
+                          <Button variant="secondary" onClick={() => handleDeleteRequest(it)}>Delete</Button>
                         </div>
                       </td>
                     </tr>
@@ -387,14 +501,16 @@ export default function ManageDocuments(){
               </table>
             </div>
 
-            {processingRequest && (
+            {modalMode && (
               <div className="modal-overlay" onClick={closeProcessingModal}>
                 <div className="modal-card complaint-details-modal" onClick={e => e.stopPropagation()}>
                   <button className="modal-close-btn" type="button" onClick={closeProcessingModal}>
                     ✕
                   </button>
 
-                  <h2 className="modal-title">Process Document Request</h2>
+                  <h2 className="modal-title">
+                    {modalMode === 'add' ? 'Add Document Request' : modalMode === 'edit' ? 'Edit Document Request' : 'Process Document Request'}
+                  </h2>
 
                   <div className="form-card process-modal-grid-single">
                     <div className="document-preview-shell-a4">
@@ -448,7 +564,22 @@ export default function ManageDocuments(){
 
                     <div className="document-edit-sidebar">
                       <div className="sidebar-card">
-                        <h3 className="sidebar-title">Edit Information</h3>
+                        <h3 className="sidebar-title">
+                          {modalMode === 'add' ? 'New Request' : modalMode === 'edit' ? 'Edit Information' : 'Process Information'}
+                        </h3>
+                        <div className="form-field">
+                          <label className="form-label">Document Type</label>
+                          <select
+                            className="ui-input"
+                            value={documentFields.document_type || ''}
+                            onChange={e => handleFieldChange('document_type', e.target.value)}
+                          >
+                            {REQUEST_DOC_TYPES.map(type => (
+                              <option key={type} value={type}>{type}</option>
+                            ))}
+                          </select>
+                          {formErrors.document_type && <div className="field-error">{formErrors.document_type}</div>}
+                        </div>
                         <div className="form-field">
                           <label className="form-label">Full Name</label>
                           <input
@@ -456,6 +587,7 @@ export default function ManageDocuments(){
                             value={documentFields.name || ''}
                             onChange={e => handleFieldChange('name', e.target.value)}
                           />
+                          {formErrors.name && <div className="field-error">{formErrors.name}</div>}
                         </div>
                         <div className="form-field">
                           <label className="form-label">Address</label>
@@ -464,6 +596,7 @@ export default function ManageDocuments(){
                             value={documentFields.address || ''}
                             onChange={e => handleFieldChange('address', e.target.value)}
                           />
+                          {formErrors.address && <div className="field-error">{formErrors.address}</div>}
                         </div>
                         {processingTemplate === 'Business Permit' && (
                           <div className="form-field">
@@ -473,6 +606,7 @@ export default function ManageDocuments(){
                               value={documentFields.business_name || ''}
                               onChange={e => handleFieldChange('business_name', e.target.value)}
                             />
+                            {formErrors.business_name && <div className="field-error">{formErrors.business_name}</div>}
                           </div>
                         )}
                         {processingTemplate !== 'Certificate of Indigency' && (
@@ -493,13 +627,35 @@ export default function ManageDocuments(){
                             value={documentFields.purpose || ''}
                             onChange={e => handleFieldChange('purpose', e.target.value)}
                           />
+                          {formErrors.purpose && <div className="field-error">{formErrors.purpose}</div>}
                         </div>
-                        <div className="sidebar-actions-buttons">
-                          <Button variant="secondary" onClick={closeProcessingModal} style={{ flex: 1 }}>Cancel</Button>
-                          <Button variant="secondary" onClick={handlePrintPdf} style={{ flex: 1 }}>Print</Button>
-                          <Button variant="secondary" onClick={handleDownloadPdf} style={{ flex: 1 }}>Download</Button>
-                          <Button onClick={handleFinalizeRequest} style={{ flex: 1 }}>Finalize</Button>
+                        <div className="form-field">
+                          <label className="form-label">Notes</label>
+                          <textarea
+                            className="ui-input"
+                            rows="3"
+                            value={documentFields.notes || ''}
+                            onChange={e => handleFieldChange('notes', e.target.value)}
+                          />
                         </div>
+                        {modalMode !== 'process' && (
+                          <div className="sidebar-actions-buttons">
+                            <Button variant="secondary" onClick={closeProcessingModal} style={{ flex: 1 }}>Cancel</Button>
+                            <Button onClick={handleSaveRequest} style={{ flex: 1 }}>
+                              {modalMode === 'add' ? 'Save Request' : 'Save Changes'}
+                            </Button>
+                          </div>
+                        )}
+                        {modalMode === 'process' && (
+                          <div className="sidebar-actions-buttons">
+                            <Button variant="secondary" onClick={closeProcessingModal} style={{ flex: 1 }}>Cancel</Button>
+                            <Button variant="secondary" onClick={handlePrintPdf} style={{ flex: 1 }}>Print</Button>
+                            <Button variant="secondary" onClick={handleDownloadPdf} style={{ flex: 1 }}>
+                              Download
+                            </Button>
+                            <Button onClick={handleFinalizeRequest} style={{ flex: 1 }}>Finalize</Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
