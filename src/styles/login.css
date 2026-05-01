@@ -1,0 +1,1046 @@
+/* =========================
+   Login Theme Variables
+========================= */
+:root{
+  --login-bg-1: rgba(37, 99, 235, 0.10);
+  --login-bg-2: rgba(14, 165, 233, 0.10);
+  --login-card-border: rgba(15, 23, 42, 0.08);
+  --login-panel: rgba(255,255,255,0.92);
+  --login-panel-border: rgba(15, 23, 42, 0.12);
+}
+
+html.dark{
+  --login-bg-1: rgba(37, 99, 235, 0.18);
+  --login-bg-2: rgba(14, 165, 233, 0.12);
+  --login-card-border: rgba(255,255,255,0.12);
+  --login-panel: rgba(15,23,42,0.92);
+  --login-panel-border: rgba(255,255,255,0.12);
+}
+
+html.high-contrast{
+  --login-bg-1: rgba(255, 214, 10, 0.06);
+  --login-bg-2: rgba(255, 255, 255, 0.03);
+  --login-card-border: rgba(255,255,255,0.85);
+  --login-panel: #000000;
+  --login-panel-border: rgba(255,255,255,0.85);
+}
+
+/* =========================
+   Shell
+========================= */
+.login-shell{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  color: var(--text-color);
+  background:
+    radial-gradient(900px 500px at 15% 8%, var(--login-bg-1), transparent 60%),
+    radial-gradient(900px 500px at 85% 18%, var(--login-bg-2), transparent 55%),
+    linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.00));
+  background-color: var(--bg);
+  overflow:auto;
+}
+
+.register-shell{
+  overflow:auto;
+  min-height:100vh;
+}
+
+.register-shell .login-main{
+  min-height: auto;
+  align-items:flex-start;
+  justify-content:flex-start;
+  padding:14px 12px 16px;
+}
+
+.register-shell .register-card{
+  max-height: auto;
+  overflow:visible;
+  padding:20px 18px;
+}
+
+.register-shell .login-body{
+  gap:12px;
+}
+
+.register-shell .card-head{
+  gap:12px;
+  margin-bottom:0;
+}
+
+.register-shell .register-steps{
+  margin-bottom:12px;
+  gap:8px;
+}
+
+.register-shell .register-grid{
+  margin-top:12px;
+  gap:14px;
+}
+
+.register-shell .register-col{
+  padding:16px;
+  gap:12px;
+}
+
+.register-shell .register-title{
+  margin:0 0 12px;
+  font-size:0.95rem;
+}
+
+.register-shell .register-actions{
+  margin-top:10px;
+  gap:8px;
+}
+
+.register-shell .bottom-text{
+  margin-top:10px;
+  font-size:0.92rem;
+}
+
+/* =========================
+   Login Header / Topbar
+========================= */
+.login-topbar{
+  position:relative;
+  z-index:50;
+
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns: minmax(220px, 280px) 1fr auto;
+  align-items:center;
+  gap:18px;
+  padding:14px 22px;
+
+  background: color-mix(in srgb, var(--card-bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom:1px solid var(--border-color);
+}
+
+.topbar-left{
+  display:flex;
+  align-items:center;
+  min-width:0;
+  position:relative;
+}
+
+.topbar-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+
+.topbar-logo{
+  width:54px;
+  height:54px;
+  object-fit:contain;
+  flex-shrink:0;
+}
+
+.brand-copy{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
+.brand-kicker{
+  font-size:0.75rem;
+  font-weight:800;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color: var(--muted-color);
+  line-height:1.1;
+}
+
+.brand-name{
+  font-size:1rem;
+  font-weight:900;
+  color: var(--text-color);
+  line-height:1.15;
+}
+
+.topbar-center{
+  text-align:center;
+  min-width:0;
+  position:relative;
+}
+
+.system-title{
+  margin:0;
+  font-size:1.2rem;
+  font-weight:900;
+  letter-spacing:0.2px;
+  color: var(--text-color);
+  line-height:1.2;
+}
+
+.system-subtitle{
+  margin:6px 0 0;
+  font-size:0.88rem;
+  font-weight:700;
+  color: var(--muted-color);
+  line-height:1.35;
+}
+
+.topbar-right{
+  display:flex;
+  justify-content:flex-end;
+  position:relative;
+  z-index:60;
+}
+
+/* =========================
+   Settings Button
+========================= */
+.settings-btn{
+  min-width:120px;
+  height:46px;
+  padding:0 14px;
+  border-radius:14px;
+  border:1px solid var(--border-color);
+  background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+  color: var(--text-color);
+
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  font-weight:900;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+.settings-btn:hover{
+  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--primary-color) 28%, var(--border-color));
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+.settings-btn:focus-visible{
+  outline:none;
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.settings-gear{
+  font-size:1.05rem;
+  line-height:1;
+  color: var(--primary-color);
+}
+
+.settings-text{
+  line-height:1;
+  color: var(--text-color);
+}
+
+/* =========================
+   Settings Panel
+========================= */
+.settings-panel{
+  position:absolute;
+  top:56px;
+  right:0;
+  width:300px;
+  padding:14px;
+  border-radius:16px;
+  background: var(--login-panel);
+  border:1px solid var(--login-panel-border);
+  box-shadow: var(--shadow);
+  color: var(--text-color);
+  z-index:999;
+}
+
+.settings-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.settings-close{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  border:1px solid var(--border-color);
+  background: transparent;
+  cursor:pointer;
+  color: var(--text-color);
+}
+
+.settings-close:hover{
+  background: var(--surface-2);
+}
+
+.settings-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 0;
+}
+
+.settings-label{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  color: var(--text-color);
+}
+
+.settings-label span{
+  font-weight:800;
+}
+
+.settings-label small{
+  color: var(--muted-color);
+  font-size:0.82rem;
+  line-height:1.25;
+}
+
+.settings-label.block{
+  margin-top:2px;
+}
+
+.settings-divider{
+  height:1px;
+  background: var(--border-color);
+  margin:8px 0 10px;
+}
+
+.font-size-row{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.chip{
+  flex:1;
+  min-height:40px;
+  padding:10px 0;
+  border-radius:12px;
+  border:1px solid var(--border-color);
+  background: var(--card-bg);
+  cursor:pointer;
+  font-weight:900;
+  color: var(--text-color);
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.chip:hover{
+  background: var(--surface-2);
+}
+
+.chip.active{
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+/* =========================
+   Main Layout
+========================= */
+.login-main{
+  position:relative;
+  z-index:1;
+
+  flex:1 1 auto;
+  min-height:0;
+
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+
+  padding:32px 20px 40px;
+  overflow:visible;
+}
+
+.login-layout{
+  position:relative;
+  z-index:1;
+
+  width:min(1120px, 100%);
+  display:grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(470px, 500px);
+  gap:24px;
+  align-items:center;
+}
+
+/* =========================
+   Left Info Panel
+========================= */
+.login-info{
+  position:relative;
+  z-index:1;
+
+  min-height:520px;
+  border:1px solid var(--border-color);
+  border-radius:24px;
+  background: color-mix(in srgb, var(--card-bg) 78%, transparent);
+  box-shadow: var(--shadow);
+  padding:32px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.info-badge{
+  width:max-content;
+  padding:8px 12px;
+  border-radius:999px;
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  font-weight:900;
+  font-size:0.84rem;
+  margin-bottom:18px;
+}
+
+.info-title{
+  margin:0;
+  font-size: clamp(1.9rem, 2.5vw, 2.8rem);
+  line-height:1.12;
+  font-weight:900;
+  color: var(--text-color);
+  max-width: 14ch;
+}
+
+.info-text{
+  margin:16px 0 0;
+  max-width:56ch;
+  font-size:1rem;
+  line-height:1.6;
+  color: var(--muted-color);
+}
+
+.info-points{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-top:26px;
+}
+
+.info-point{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  color: var(--text-color);
+  font-weight:700;
+  line-height:1.45;
+}
+
+.info-dot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  background: var(--primary-color);
+  box-shadow: 0 0 0 6px var(--primary-soft);
+  margin-top:5px;
+  flex-shrink:0;
+}
+
+/* =========================
+   Login / Register Card
+========================= */
+.login-card{
+  position:relative;
+  z-index:1;
+
+  width:100%;
+  background: color-mix(in srgb, var(--card-bg) 96%, transparent);
+  border-radius:24px;
+  padding:30px;
+  box-shadow: var(--shadow);
+  border:1px solid var(--login-card-border);
+  display:block;
+}
+
+.login-body{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.card-head{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:18px;
+  margin-bottom:0;
+}
+
+.register-card .card-title{
+  margin:0;
+  font-size:2rem;
+  line-height:1.1;
+  font-weight:900;
+  color: var(--primary-color);
+}
+
+.register-card .card-sub{
+  margin:0;
+  font-size:0.96rem;
+  color: var(--muted-color);
+  line-height:1.4;
+}
+
+.register-card .register-steps{
+  margin-top:0;
+}
+
+.login-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:4px;
+  margin-bottom:2px;
+  flex-wrap:wrap;
+}
+
+.remember{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:0.95rem;
+  color: var(--text-color);
+  font-weight:700;
+}
+
+.remember input{
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color: var(--primary-color);
+}
+
+.link-muted{
+  color: var(--muted-color);
+  font-weight:800;
+  text-decoration:none;
+}
+
+.link-muted:hover{
+  text-decoration:underline;
+}
+
+.actions{
+  margin-top:18px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.actions .btn{
+  min-width:140px;
+}
+
+.error{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:12px;
+  background: var(--danger-soft);
+  border:1px solid color-mix(in srgb, var(--danger-color) 28%, transparent);
+  color: var(--danger-color);
+  font-weight:800;
+}
+
+.muted{
+  color: var(--muted-color);
+  font-size:0.95rem;
+  line-height:1.45;
+}
+
+.bottom-text{
+  margin-top:18px;
+  text-align:center;
+}
+
+.bottom-text a{
+  font-weight:900;
+  color: var(--primary-color);
+  text-decoration:none;
+}
+
+.bottom-text a:hover{
+  text-decoration:underline;
+}
+
+/* =========================
+   Switch
+========================= */
+.switch{
+  position:relative;
+  width:46px;
+  height:26px;
+  display:inline-block;
+  flex-shrink:0;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  background:rgba(0,0,0,0.18);
+  transition:.2s;
+}
+
+html.dark .slider{
+  background:rgba(255,255,255,0.18);
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  left:3px;
+  top:3px;
+  border-radius:999px;
+  background:#ffffff;
+  transition:.2s;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+}
+
+.switch input:checked + .slider{
+  background: var(--primary-color);
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(20px);
+}
+
+/* =========================
+   Register Helpers
+========================= */
+.login-page{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:32px 20px 40px;
+  background-color: var(--bg);
+  color: var(--text-color);
+  overflow:auto;
+}
+
+.register-steps{
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.step-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+  border:1px solid var(--border-color);
+  padding:10px 14px;
+  border-radius:16px;
+  color: var(--muted-color);
+  font-size:0.95rem;
+  font-weight:700;
+  min-width: calc(33.33% - 8px);
+  justify-content:center;
+  cursor:pointer;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.step-item:hover:not(:disabled){
+  transform: translateY(-1px);
+  border-color: var(--primary-color);
+}
+
+.step-item.step-active{
+  border-color: var(--primary-color);
+  color: var(--text-color);
+  background: color-mix(in srgb, var(--primary-color) 10%, var(--card-bg));
+}
+
+.step-item button{
+  all: unset;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+}
+
+.step-item:disabled,
+.step-item[disabled]{
+  opacity:0.55;
+  cursor:not-allowed;
+}
+
+.step-count{
+  min-width:28px;
+  min-height:28px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background: var(--primary-color);
+  color:#ffffff;
+  font-size:0.9rem;
+}
+
+.register-grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:22px;
+  margin-top:18px;
+}
+
+.register-col{
+  border:1px solid var(--border-color);
+  border-radius:18px;
+  padding:20px;
+  background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  min-width:0;
+}
+
+.register-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:1rem;
+  font-weight:900;
+  margin:0 0 16px;
+  color: var(--text-color);
+}
+
+.step-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:28px;
+  min-height:28px;
+  border-radius:999px;
+  background: var(--primary-color);
+  color:#ffffff;
+  font-size:0.9rem;
+  font-weight:900;
+  padding:0 8px;
+}
+
+.register-col p{
+  margin:0;
+  color: var(--muted-color);
+  line-height:1.6;
+}
+
+
+.pw-hint{
+  margin:-6px 0 10px;
+  color: var(--muted-color);
+  font-size:0.92rem;
+}
+
+.pw-ok{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(16,185,129,0.10);
+  border:1px solid rgba(16,185,129,0.25);
+  font-weight:800;
+  color: var(--text-color);
+}
+
+.pw-bad{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(245,158,11,0.10);
+  border:1px solid rgba(245,158,11,0.25);
+  font-weight:800;
+  color: var(--text-color);
+}
+
+.register-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+.register-actions button{
+  min-width:140px;
+}
+
+.register-card{
+  width:100% !important;
+  max-width:1080px !important;
+  margin:0 auto;
+}
+
+/* =========================
+   High Contrast
+========================= */
+html.high-contrast .login-topbar,
+html.high-contrast .login-info,
+html.high-contrast .login-card,
+html.high-contrast .settings-panel,
+html.high-contrast .register-col{
+  background:#000000;
+  border:2px solid rgba(255,255,255,0.85);
+}
+
+html.high-contrast .settings-btn,
+html.high-contrast .settings-close,
+html.high-contrast .chip{
+  background:#000000;
+  color:#ffffff;
+  border:2px solid #ffffff;
+}
+
+html.high-contrast .settings-btn:hover,
+html.high-contrast .settings-close:hover,
+html.high-contrast .chip:hover{
+  background:#1a1a1a;
+}
+
+html.high-contrast .chip.active{
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+html.high-contrast .info-badge{
+  border:2px solid var(--primary-color);
+}
+
+html.high-contrast .slider{
+  background:#333333;
+}
+
+html.high-contrast .switch input:checked + .slider{
+  background: var(--primary-color);
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 1100px){
+  .login-shell{
+    min-height:100vh;
+  }
+
+  .register-shell .login-main{
+    min-height: auto;
+    padding:12px 12px 14px;
+  }
+
+  .register-shell .register-card{
+    max-width:100% !important;
+  }
+
+  .login-main{
+    overflow:visible;
+    padding:32px 16px 30px;
+  }
+
+  .login-layout{
+    grid-template-columns:1fr;
+  }
+
+  .login-info{
+    height:auto;
+    max-height:none;
+    padding:28px;
+  }
+
+  .info-title{
+    max-width:none;
+  }
+
+  .login-card{
+    max-width:560px;
+    margin:0 auto;
+  }
+
+  .register-card{
+    max-width:950px;
+  }
+}
+
+@media (max-width: 980px){
+  .register-grid{
+    grid-template-columns:1fr;
+  }
+
+  .register-card{
+    width:100% !important;
+  }
+}
+
+@media (max-width: 820px){
+  .login-topbar{
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "left right"
+      "center center";
+    gap:10px 12px;
+    padding:14px 14px;
+  }
+
+  .topbar-left{
+    grid-area:left;
+  }
+
+  .topbar-center{
+    grid-area:center;
+    text-align:left;
+  }
+
+  .topbar-right{
+    grid-area:right;
+  }
+
+  .system-title{
+    font-size:1.05rem;
+  }
+
+  .system-subtitle{
+    font-size:0.82rem;
+  }
+
+  .topbar-logo{
+    width:46px;
+    height:46px;
+  }
+}
+
+@media (max-width: 560px){
+  .settings-btn{
+    min-width:46px;
+    width:46px;
+    padding:0;
+  }
+
+  .settings-text{
+    display:none;
+  }
+
+  .system-subtitle{
+    display:none;
+  }
+
+  .brand-kicker{
+    display:none;
+  }
+
+  .card-title{
+    font-size:1.7rem;
+  }
+
+  .actions{
+    justify-content:stretch;
+  }
+
+  .actions .btn{
+    width:100%;
+  }
+
+  .login-row{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .font-size-row{
+    gap:8px;
+  }
+
+  .chip{
+    min-height:38px;
+  }
+
+  .login-info,
+  .login-card{
+    padding:22px;
+    border-radius:20px;
+  }
+
+  .settings-panel{
+    width:min(92vw, 320px);
+  }
+}
+
+/* =========================
+   Large Font Safety
+========================= */
+html.font-large .login-card,
+html.font-xlarge .login-card{
+  padding:26px;
+}
+
+html.font-large .register-card,
+html.font-xlarge .register-card{
+  padding:26px;
+}
+
+html.font-xlarge .login-main{
+  align-items:flex-start;
+  padding-top:32px;
+  padding-bottom:40px;
+}
+
+html.font-xlarge .login-layout{
+  grid-template-columns: minmax(0, 0.95fr) minmax(560px, 620px);
+  align-items:center;
+}
+
+html.font-xlarge .system-title{
+  font-size:1.08rem;
+}
+
+html.font-xlarge .system-subtitle{
+  font-size:0.82rem;
+}
+
+html.font-xlarge .card-title{
+  font-size:1.7rem;
+}
+
+html.font-xlarge .card-sub{
+  font-size:0.95rem;
+}
+
+html.font-xlarge .info-title{
+  font-size:2.1rem;
+  max-width:none;
+}
+
+html.font-xlarge .info-text,
+html.font-xlarge .info-point,
+html.font-xlarge .remember,
+html.font-xlarge .muted,
+html.font-xlarge .link-muted{
+  font-size:0.98rem;
+}
+
+html.font-xlarge .register-grid{
+  grid-template-columns:1fr;
+}
+
+/* keep login full and centered vertically beside left panel */
+html.font-xlarge .login-card{
+  width:100%;
+  max-width:none;
+  margin:0;
+  align-self:center;
+}
+
+/* register should scroll naturally and stay fully reachable */
+html.font-xlarge .register-card{
+  margin:0 auto;
+  max-width:980px !important;
+}

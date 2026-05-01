@@ -1,0 +1,135 @@
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:5px 10px;
+  border-radius:999px;
+
+  font-size:0.82rem;
+  font-weight:800;
+  letter-spacing:.2px;
+
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+
+/* =========================
+   APPROVED / RESOLVED
+========================= */
+
+.status-badge.green{
+  background:#ecfdf5;
+  color:#046c4e;
+  border-color:#a7f3d0;
+}
+
+/* =========================
+   PENDING
+========================= */
+
+.status-badge.yellow{
+  background:#fffbeb;
+  color:#92400e;
+  border-color:#fde68a;
+}
+
+/* =========================
+   REJECTED
+========================= */
+
+.status-badge.red{
+  background:#fff1f2;
+  color:#9f1239;
+  border-color:#fecdd3;
+}
+
+/* =========================
+   REVIEW
+========================= */
+
+.status-badge.blue{
+  background:#eff6ff;
+  color:#1e3a8a;
+  border-color:#bfdbfe;
+}
+
+/* =========================
+   DEFAULT
+========================= */
+
+.status-badge.gray{
+  background:#f3f4f6;
+  color:#374151;
+  border-color:#d1d5db;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+html.dark .status-badge.green{
+  background:rgba(16,185,129,0.18);
+  color:#34d399;
+  border-color:rgba(16,185,129,0.40);
+}
+
+html.dark .status-badge.yellow{
+  background:rgba(245,158,11,0.18);
+  color:#fbbf24;
+  border-color:rgba(245,158,11,0.40);
+}
+
+html.dark .status-badge.red{
+  background:rgba(239,68,68,0.18);
+  color:#f87171;
+  border-color:rgba(239,68,68,0.40);
+}
+
+html.dark .status-badge.blue{
+  background:rgba(59,130,246,0.18);
+  color:#60a5fa;
+  border-color:rgba(59,130,246,0.40);
+}
+
+html.dark .status-badge.gray{
+  background:rgba(148,163,184,0.18);
+  color:#e2e8f0;
+  border-color:rgba(148,163,184,0.40);
+}
+
+/* =========================
+   HIGH CONTRAST MODE
+========================= */
+
+html.high-contrast .status-badge{
+  background:#000000;
+  color:#ffffff;
+  border:2px solid #ffffff;
+  font-weight:900;
+}
+
+html.high-contrast .status-badge.green{
+  color:#22c55e;
+  border-color:#22c55e;
+}
+
+html.high-contrast .status-badge.yellow{
+  color:#facc15;
+  border-color:#facc15;
+}
+
+html.high-contrast .status-badge.red{
+  color:#ef4444;
+  border-color:#ef4444;
+}
+
+html.high-contrast .status-badge.blue{
+  color:#60a5fa;
+  border-color:#60a5fa;
+}
+
+html.high-contrast .status-badge.gray{
+  color:#e5e7eb;
+  border-color:#e5e7eb;
+}

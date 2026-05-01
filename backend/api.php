@@ -1,0 +1,289 @@
+<?php
+// Simple PHP REST API for demo purposes
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit;
+
+require __DIR__ . '/db.php';
+
+$method = $_SERVER['REQUEST_METHOD'];
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = rtrim($uri, '/');
+// When using php -S with a router script, REQUEST_URI might include the script name
+// Strip api.php if it's in the path
+if(strpos($uri, '/api.php') === 0){
+  $uri = substr($uri, 8); // strlen('/api.php') === 8
+}
+// Also handle old /barangay_api/api.php paths for backwards compatibility
+$uri = str_replace('/barangay_api/api.php', '', $uri);
+// strip folder name when running under Apache (e.g. /barangay-api/api.php/seed)
+// this removes the first path component and an optional "/api.php" that follows
+$uri = preg_replace('#^/(?:[^/]+)(?:/api\.php)?#', '', $uri);
+if(empty($uri)) $uri = '/';
+
+function getBearerToken(){
+  $h = getallheaders();
+  if(!empty($h['Authorization'])){
+    if(preg_match('/Bearer\s+(.*)$/i', $h['Authorization'], $m)) return $m[1];
+  }
+  return null;
+}
+
+function findUserByToken($pdo, $token){
+  if(!$token) return null;
+  // check residents
+  $stmt = $pdo->prepare('SELECT resident_id as id, first_name, last_name, email, "resident" as role FROM Resident WHERE api_token = ?');
+  $stmt->execute([$token]);
+  $r = $stmt->fetch();
+  if($r) return $r;
+  // check staff
+  $stmt = $pdo->prepare('SELECT staff_id as id, full_name as first_name, email, "staff" as role FROM Staff WHERE api_token = ?');
+  $stmt->execute([$token]);
+  $s = $stmt->fetch();
+  if($s) return $s;
+  return null;
+}
+
+function findUserByEmail($pdo, $email){
+  if(!$email) return null;
+  $stmt = $pdo->prepare('SELECT resident_id AS id, first_name, last_name, email, password, api_token, "resident" AS role FROM Resident WHERE email = ?');
+  $stmt->execute([$email]);
+  $r = $stmt->fetch();
+  if($r) return $r;
+  $stmt = $pdo->prepare('SELECT staff_id AS id, full_name AS first_name, email, password, api_token, "staff" AS role FROM Staff WHERE email = ?');
+  $stmt->execute([$email]);
+  return $stmt->fetch();
+}
+
+function updateUserApiToken($pdo, $role, $id, $token){
+  if($role === 'staff'){
+    $pdo->prepare('UPDATE Staff SET api_token = ? WHERE staff_id = ?')->execute([$token, $id]);
+  } else {
+    $pdo->prepare('UPDATE Resident SET api_token = ? WHERE resident_id = ?')->execute([$token, $id]);
+  }
+}
+
+function updateUserPassword($pdo, $role, $id, $hash){
+  if($role === 'staff'){
+    $pdo->prepare('UPDATE Staff SET password = ?, api_token = NULL WHERE staff_id = ?')->execute([$hash, $id]);
+  } else {
+    $pdo->prepare('UPDATE Resident SET password = ?, api_token = NULL WHERE resident_id = ?')->execute([$hash, $id]);
+  }
+}
+
+// Route: /register
+if($uri === '/register' && $method === 'POST'){
+  $data = json_decode(file_get_contents('php://input'), true);
+  if(empty($data['email']) || empty($data['password'])) json(['success'=>false,'message'=>'Email and password required']);
+  // check unique
+  $stmt = $pdo->prepare('SELECT resident_id FROM Resident WHERE email = ?');
+  $stmt->execute([$data['email']]);
+  if($stmt->fetch()) json(['success'=>false,'message'=>'Email already registered']);
+  $hash = password_hash($data['password'], PASSWORD_BCRYPT);
+  $stmt = $pdo->prepare('INSERT INTO Resident (first_name, middle_name, last_name, birth_date, gender, address, contact_number, email, password, account_status, registration_date) VALUES (?,?,?,?,?,?,?,?,?,"Active",NOW())');
+  $stmt->execute([$data['first_name'] ?? '', $data['middle_name'] ?? '', $data['last_name'] ?? '', $data['birth_date'] ?? null, $data['gender'] ?? null, $data['address'] ?? null, $data['contact_number'] ?? null, $data['email'], $hash]);
+  $id = $pdo->lastInsertId();
+  $token = bin2hex(random_bytes(16));
+  $pdo->prepare('UPDATE Resident SET api_token = ? WHERE resident_id = ?')->execute([$token, $id]);
+  json(['success'=>true,'token'=>$token,'user'=>['id'=>$id,'email'=>$data['email'],'role'=>'resident']]);
+}
+
+// Route: /login
+if($uri === '/login' && $method === 'POST'){
+  $data = json_decode(file_get_contents('php://input'), true);
+  if(empty($data['email']) || empty($data['password'])) json(['success'=>false,'message'=>'Email and password required']);
+  // try staff
+  $stmt = $pdo->prepare('SELECT staff_id, full_name, email, password FROM Staff WHERE email = ?');
+  $stmt->execute([$data['email']]);
+  $s = $stmt->fetch();
+  if($s && password_verify($data['password'], $s['password'])){
+    $token = bin2hex(random_bytes(16));
+    $pdo->prepare('UPDATE Staff SET api_token = ? WHERE staff_id = ?')->execute([$token, $s['staff_id']]);
+    json(['success'=>true,'token'=>$token,'user'=>['id'=>$s['staff_id'],'name'=>$s['full_name'],'role'=>'staff']]);
+  }
+  // try resident
+  $stmt = $pdo->prepare('SELECT resident_id, first_name, last_name, email, password FROM Resident WHERE email = ?');
+  $stmt->execute([$data['email']]);
+  $r = $stmt->fetch();
+  if($r && password_verify($data['password'], $r['password'])){
+    $token = bin2hex(random_bytes(16));
+    $pdo->prepare('UPDATE Resident SET api_token = ? WHERE resident_id = ?')->execute([$token, $r['resident_id']]);
+    json(['success'=>true,'token'=>$token,'user'=>['id'=>$r['resident_id'],'name'=>($r['first_name'].' '.$r['last_name']),'role'=>'resident']]);
+  }
+  json(['success'=>false,'message'=>'Invalid credentials']);
+}
+
+// Route: /me - get current user from Bearer token
+if($uri === '/me' && $method === 'GET'){
+  $token = getBearerToken();
+  $user = findUserByToken($pdo, $token);
+  if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+  json(['success'=>true,'user'=>$user]);
+}
+
+// Route: /forgot-password
+if($uri === '/forgot-password' && $method === 'POST'){
+  $data = json_decode(file_get_contents('php://input'), true);
+  if(empty($data['email'])) json(['success'=>false,'message'=>'Email is required']);
+  $user = findUserByEmail($pdo, $data['email']);
+  if(!$user) json(['success'=>false,'message'=>'Email not found']);
+
+  $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+  updateUserApiToken($pdo, $user['role'], $user['id'], $code);
+
+  json(['success'=>true,'message'=>'Reset code generated successfully','token'=>$code]);
+}
+
+// Route: /reset-password
+if($uri === '/reset-password' && $method === 'POST'){
+  $data = json_decode(file_get_contents('php://input'), true);
+  if(empty($data['email']) || empty($data['token']) || empty($data['password'])) json(['success'=>false,'message'=>'Email, reset code, and password are required']);
+  $user = findUserByEmail($pdo, $data['email']);
+  if(!$user) json(['success'=>false,'message'=>'Email not found']);
+  if($user['api_token'] !== $data['token']) json(['success'=>false,'message'=>'Invalid reset code']);
+  if(strlen($data['password']) < 6) json(['success'=>false,'message'=>'Password must be at least 6 characters']);
+
+  $hash = password_hash($data['password'], PASSWORD_BCRYPT);
+  updateUserPassword($pdo, $user['role'], $user['id'], $hash);
+
+  json(['success'=>true,'message'=>'Password reset successful']);
+}
+
+// Route: /seed - development helper to create/hash test accounts
+if($uri === '/seed' && $method === 'GET'){
+  // Remove and recreate the two requested test accounts
+  $adminEmail = 'admin@gmail.com';
+  $adminPass = '123';
+  // delete any existing staff with that email
+  $pdo->prepare('DELETE FROM Staff WHERE email = ?')->execute([$adminEmail]);
+  $hp = password_hash($adminPass, PASSWORD_BCRYPT);
+  $pdo->prepare('INSERT INTO Staff (full_name, role, email, password, contact_number, account_status) VALUES (?, ?, ?, ?, ?, ?)')
+    ->execute(['Admin','Admin',$adminEmail,$hp,'0000000000','Active']);
+
+  $resEmail = 'carlo@gmail.com';
+  $resPass = '123';
+  // delete any existing resident with that email
+  $pdo->prepare('DELETE FROM Resident WHERE email = ?')->execute([$resEmail]);
+  $hp = password_hash($resPass, PASSWORD_BCRYPT);
+  $pdo->prepare('INSERT INTO Resident (first_name, middle_name, last_name, birth_date, gender, address, contact_number, email, password, account_status, registration_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())')
+    ->execute(['Carlo', '', 'Resident', '2000-01-01', 'Male', 'Sample Address', '0000000000', $resEmail, $hp, 'Active']);
+
+  json(['success'=>true,'message'=>'Recreated test accounts: admin@gmail.com / 123 and carlo@gmail.com / 123']);
+}
+
+// Route: /complaints GET (list) or POST (create)
+if($uri === '/complaints'){
+  if($method === 'GET'){
+    $stmt = $pdo->query('SELECT * FROM Complaint ORDER BY date_submitted DESC LIMIT 200');
+    $rows = $stmt->fetchAll();
+    json(['success'=>true,'data'=>$rows]);
+  }
+  if($method === 'POST'){
+    $token = getBearerToken();
+    $user = findUserByToken($pdo, $token);
+    if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+    $data = json_decode(file_get_contents('php://input'), true);
+    $stmt = $pdo->prepare('INSERT INTO Complaint (resident_id, category_id, assigned_staff_id, title, description, incident_location, incident_date, status, date_submitted) VALUES (?, ?, NULL, ?, ?, ?, ?, "Submitted", NOW())');
+    $stmt->execute([$user['id'], $data['category_id'] ?? null, $data['title'] ?? '', $data['description'] ?? '', $data['incident_location'] ?? '', $data['incident_date'] ?? null]);
+    json(['success'=>true,'id'=>$pdo->lastInsertId()]);
+  }
+}
+
+// Route: /complaints/{id} - update complaint (admin)
+if(preg_match('#^/complaints/(\d+)$#', $uri, $m) && in_array($method, ['PUT','PATCH','POST'])){
+  $token = getBearerToken();
+  $user = findUserByToken($pdo, $token);
+  if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+  // only staff can update complaints
+  if($user['role'] !== 'staff') json(['success'=>false,'message'=>'Forbidden']);
+  $id = intval($m[1]);
+  $data = json_decode(file_get_contents('php://input'), true);
+  $fields = [];
+  $vals = [];
+  if(isset($data['status'])){ $fields[] = 'status = ?'; $vals[] = $data['status']; }
+  if(isset($data['assigned_staff_id'])){ $fields[] = 'assigned_staff_id = ?'; $vals[] = $data['assigned_staff_id']; }
+  if(isset($data['resolution_notes'])){ $fields[] = 'resolution_notes = ?'; $vals[] = $data['resolution_notes']; }
+  if(count($fields) === 0) json(['success'=>false,'message'=>'Nothing to update']);
+  $vals[] = $id;
+  $sql = 'UPDATE Complaint SET '.implode(', ', $fields).' WHERE complaint_id = ?';
+  $pdo->prepare($sql)->execute($vals);
+  json(['success'=>true]);
+}
+
+// Route: /docs GET/POST
+if($uri === '/docs'){
+  if($method === 'GET'){
+    $stmt = $pdo->query('SELECT * FROM Document_Request ORDER BY date_requested DESC LIMIT 200');
+    json(['success'=>true,'data'=>$stmt->fetchAll()]);
+  }
+  if($method === 'POST'){
+    $token = getBearerToken();
+    $user = findUserByToken($pdo, $token);
+    if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+    $data = json_decode(file_get_contents('php://input'), true);
+    $ref = 'REQ-'.time();
+    $stmt = $pdo->prepare('INSERT INTO Document_Request (resident_id, processed_by, document_type, purpose, business_name, status, reference_number, date_requested) VALUES (?, NULL, ?, ?, ?, "Submitted", ?, NOW())');
+    $stmt->execute([$user['id'], $data['document_type'] ?? '', $data['purpose'] ?? '', $data['business_name'] ?? '', $ref]);
+    json(['success'=>true,'id'=>$pdo->lastInsertId(),'reference'=>$ref]);
+  }
+}
+
+// Route: /docs/{id} - update document request (admin)
+if(preg_match('#^/docs/(\d+)$#', $uri, $m) && in_array($method, ['PUT','PATCH','POST'])){
+  $token = getBearerToken();
+  $user = findUserByToken($pdo, $token);
+  if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+  if($user['role'] !== 'staff') json(['success'=>false,'message'=>'Forbidden']);
+  $id = intval($m[1]);
+  $data = json_decode(file_get_contents('php://input'), true);
+  $fields = [];
+  $vals = [];
+  if(isset($data['status'])){ $fields[] = 'status = ?'; $vals[] = $data['status']; }
+  if(isset($data['processed_by'])){ $fields[] = 'processed_by = ?'; $vals[] = $data['processed_by']; }
+  if(count($fields) === 0) json(['success'=>false,'message'=>'Nothing to update']);
+  $vals[] = $id;
+  $sql = 'UPDATE Document_Request SET '.implode(', ', $fields).' WHERE request_id = ?';
+  $pdo->prepare($sql)->execute($vals);
+  json(['success'=>true]);
+}
+
+// Route: /residents GET - list residents (admin)
+if($uri === '/residents' && $method === 'GET'){
+  $token = getBearerToken();
+  $user = findUserByToken($pdo, $token);
+  if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+  if($user['role'] !== 'staff') json(['success'=>false,'message'=>'Forbidden']);
+  $stmt = $pdo->query('SELECT resident_id, first_name, middle_name, last_name, email, contact_number, account_status, registration_date FROM Resident ORDER BY registration_date DESC');
+  json(['success'=>true,'data'=>$stmt->fetchAll()]);
+}
+
+// Route: /residents/{id} - patch or delete resident (admin)
+if(preg_match('#^/residents/(\d+)$#', $uri, $m) && in_array($method, ['PATCH','PUT','DELETE'])){
+  $token = getBearerToken();
+  $user = findUserByToken($pdo, $token);
+  if(!$user) json(['success'=>false,'message'=>'Unauthorized']);
+  if($user['role'] !== 'staff') json(['success'=>false,'message'=>'Forbidden']);
+  $id = intval($m[1]);
+  if($method === 'DELETE'){
+    $pdo->prepare('DELETE FROM Resident WHERE resident_id = ?')->execute([$id]);
+    json(['success'=>true]);
+  }
+  $data = json_decode(file_get_contents('php://input'), true);
+  $fields = [];
+  $vals = [];
+  if(isset($data['account_status'])){ $fields[] = 'account_status = ?'; $vals[] = $data['account_status']; }
+  if(isset($data['first_name'])){ $fields[] = 'first_name = ?'; $vals[] = $data['first_name']; }
+  if(isset($data['last_name'])){ $fields[] = 'last_name = ?'; $vals[] = $data['last_name']; }
+  if(count($fields) === 0) json(['success'=>false,'message'=>'Nothing to update']);
+  $vals[] = $id;
+  $sql = 'UPDATE Resident SET '.implode(', ', $fields).' WHERE resident_id = ?';
+  $pdo->prepare($sql)->execute($vals);
+  json(['success'=>true]);
+}
+
+// default
+http_response_code(404);
+json(['success'=>false,'message'=>'Not found']);

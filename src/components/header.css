@@ -1,0 +1,224 @@
+/* Shared layout height */
+:root{
+  --layout-header-h: 72px;
+}
+
+/* Header aligned to Login UI (glass topbar) */
+.top-header{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  height: var(--layout-header-h);
+  padding: 0 18px;
+
+  background: color-mix(in srgb, var(--card-bg) 78%, transparent);
+  backdrop-filter: blur(10px);
+
+  border-bottom:1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+/* left */
+.top-left{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  min-width:220px;
+}
+
+.barangay-name{
+  font-weight:900;
+  color: var(--text-color);
+  letter-spacing:0.3px;
+}
+
+.header-sub{
+  font-size:0.85rem;
+  font-weight:800;
+  color: var(--muted-color);
+}
+
+/* middle now empty */
+.top-middle{
+  flex:1;
+}
+
+/* right */
+.top-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.header-controls{
+  display:flex;
+  gap:10px;
+}
+
+/* Buttons aligned with Login style */
+.header-controls .small{
+  height:40px;
+  padding:0 14px;
+  border-radius:12px;
+
+  border:1px solid var(--border-color);
+  background: color-mix(in srgb, var(--card-bg) 82%, transparent);
+
+  cursor:pointer;
+  font-weight:900;
+  color: var(--text-color);
+}
+
+.header-controls .small:hover{
+  background: var(--surface-2);
+}
+
+/* pressed state */
+.header-controls .small[aria-pressed="true"]{
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+/* =========================
+   Avatar dropdown
+========================= */
+
+.avatar-wrap{
+  position:relative;
+}
+
+.avatar-btn{
+  border:none;
+  background:transparent;
+  padding:0;
+  cursor:pointer;
+}
+
+.avatar-circle{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+
+  border:1px solid var(--border-color);
+  background: color-mix(in srgb, var(--card-bg) 82%, transparent);
+
+  color: var(--text-color);
+  font-size:0.95rem;
+  font-weight:900;
+  letter-spacing:0.5px;
+}
+
+.avatar-btn:focus-visible .avatar-circle{
+  outline:none;
+  box-shadow: 0 0 0 4px var(--primary-soft);
+  border-color: var(--primary-color);
+}
+
+.avatar-menu{
+  position:absolute;
+  right:0;
+  top:52px;
+
+  width:260px;
+  border-radius:14px;
+  overflow:hidden;
+
+  background: color-mix(in srgb, var(--card-bg) 94%, transparent);
+  backdrop-filter: blur(10px);
+
+  border:1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.avatar-menu-head{
+  padding:12px 12px 10px;
+  border-bottom:1px solid var(--border-color);
+}
+
+.avatar-menu-name{
+  font-weight:900;
+  color: var(--text-color);
+  line-height:1.2;
+}
+
+.avatar-menu-email{
+  margin-top:4px;
+  font-size:0.85rem;
+  font-weight:700;
+  color: var(--muted-color);
+  word-break:break-word;
+}
+
+.avatar-item{
+  width:100%;
+  text-align:left;
+  padding:12px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+
+  font-weight:900;
+  color: var(--text-color);
+}
+
+.avatar-item:hover{
+  background: var(--surface-2);
+}
+
+.avatar-item.danger{
+  color: var(--danger-color);
+}
+
+.avatar-item.danger:hover{
+  background: var(--danger-soft);
+}
+
+/* responsive */
+@media(max-width:600px){
+  .barangay-name{ font-size:0.95rem; }
+  .header-controls .small{ padding:0 12px; }
+}
+
+html.high-contrast .top-header{
+  background: #000000;
+  border-bottom: 2px solid rgba(255,255,255,0.85);
+}
+
+html.high-contrast .header-controls .small{
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+html.high-contrast .header-controls .small:hover{
+  background: #1a1a1a;
+}
+
+html.high-contrast .avatar-circle{
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+html.high-contrast .avatar-menu{
+  background: #000000;
+  border: 2px solid #ffffff;
+}
+
+html.high-contrast .avatar-menu-head{
+  border-bottom: 2px solid rgba(255,255,255,0.4);
+}
+
+html.high-contrast .avatar-item:hover{
+  background: #1a1a1a;
+}

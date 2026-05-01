@@ -1,0 +1,387 @@
+/* Reset */
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --sidebar-w: 260px;
+  --sidebar-mini-w: 76px;
+
+  /* Light mode */
+  --bg: #f5f7fb;
+  --card-bg: #ffffff;
+  --surface-2: #f8fafc;
+  --text-color: #111827;
+  --muted-color: #6b7280;
+  --border-color: rgba(0,0,0,0.10);
+  --shadow: 0 18px 45px rgba(16, 24, 40, 0.12);
+
+  --primary-color: #2563eb;
+  --primary-soft: rgba(37, 99, 235, 0.12);
+
+  --danger-color: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.10);
+}
+
+/* Dark mode */
+html.dark{
+  --bg: #0f172a;
+  --card-bg: #111827;
+  --surface-2: #1f2937;
+  --text-color: #f9fafb;
+  --muted-color: #cbd5e1;
+  --border-color: rgba(255,255,255,0.12);
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.40);
+
+  --primary-color: #60a5fa;
+  --primary-soft: rgba(96, 165, 250, 0.16);
+
+  --danger-color: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+}
+
+html,
+body,
+#root{
+  min-height:100%;
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text-color);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text-color);
+  transition: background .2s ease, color .2s ease;
+}
+
+a{
+  color:var(--primary-color);
+}
+
+/* =========================
+   App Layout
+========================= */
+
+.app-shell{
+  display:flex;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text-color);
+}
+
+/* Sidebar spacing */
+.main-area{
+  margin-left: var(--sidebar-w);
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text-color);
+}
+
+/* Sidebar collapsed */
+html.sidebar-collapsed .main-area{
+  margin-left: var(--sidebar-mini-w);
+}
+
+/* MAIN CONTENT AREA */
+main{
+  padding:32px 28px 28px;
+  overflow-y:auto;
+  background:transparent;
+  color:var(--text-color);
+}
+
+/* =========================
+   Cards & Tables
+========================= */
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.card{
+  background:var(--card-bg);
+  color:var(--text-color);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border-color);
+  padding:16px;
+}
+
+.table-wrap{
+  overflow:auto;
+  background:var(--card-bg);
+  color:var(--text-color);
+  padding:16px;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border-color);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  color:var(--text-color);
+}
+
+.table-wrap th,
+.table-wrap td{
+  text-align:left;
+  padding:10px;
+  border-bottom:1px solid var(--border-color);
+  color:var(--text-color);
+}
+
+.table-wrap th{
+  color:var(--muted-color);
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.table-wrap tbody tr:hover{
+  background:var(--surface-2);
+}
+
+/* =========================
+   Forms / Inputs
+========================= */
+
+input,
+select,
+textarea,
+button{
+  font:inherit;
+}
+
+input,
+select,
+textarea{
+  background:var(--card-bg);
+  color:var(--text-color);
+  border:1px solid var(--border-color);
+}
+
+input::placeholder,
+textarea::placeholder{
+  color:var(--muted-color);
+}
+
+/* =========================
+   Generic surfaces often used by pages
+========================= */
+
+.history-card,
+.form-card,
+.stat-tile,
+.recent,
+.modal-card{
+  background:var(--card-bg);
+  color:var(--text-color);
+  border:1px solid var(--border-color);
+  box-shadow:var(--shadow);
+}
+
+/* Text helpers */
+h1, h2, h3, h4, h5, h6,
+label,
+span,
+p,
+div,
+small{
+  color:inherit;
+}
+
+/* Muted text helpers */
+.helper,
+.form-sub,
+.setting-desc,
+.empty-state{
+  color:var(--muted-color);
+}
+
+/* =========================
+   Utilities
+========================= */
+
+.row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.small{
+  padding:6px 8px;
+  font-size:0.85rem;
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media(max-width:700px){
+  .main-area{
+    margin-left:0;
+  }
+
+  html.sidebar-collapsed .main-area{
+    margin-left:0;
+  }
+}
+
+/* =========================
+   Font Scaling
+========================= */
+
+html{
+  font-size:16px;
+}
+
+html.font-small{
+  font-size:14px;
+}
+
+html.font-medium{
+  font-size:16px;
+}
+
+html.font-large{
+  font-size:18px;
+}
+
+html.font-xlarge{
+  font-size:20px;
+} 
+
+/* =========================
+   High Contrast Mode
+========================= */
+
+html.high-contrast{
+  --bg: #000000;
+  --card-bg: #0a0a0a;
+  --surface-2: #141414;
+  --text-color: #ffffff;
+  --muted-color: #f3f4f6;
+  --border-color: rgba(255,255,255,0.85);
+  --shadow: 0 0 0 2px rgba(255,255,255,0.22);
+
+  --primary-color: #ffd60a;
+  --primary-soft: rgba(255, 214, 10, 0.18);
+
+  --danger-color: #ff6b6b;
+  --danger-soft: rgba(255, 107, 107, 0.18);
+}
+
+/* Make contrast mode more obvious on all major surfaces */
+html.high-contrast body,
+html.high-contrast .app-shell,
+html.high-contrast .main-area,
+html.high-contrast main{
+  background: var(--bg);
+  color: var(--text-color);
+}
+
+html.high-contrast .card,
+html.high-contrast .table-wrap,
+html.high-contrast .form-card,
+html.high-contrast .history-card,
+html.high-contrast .stat-tile,
+html.high-contrast .recent,
+html.high-contrast .modal-card{
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+/* Stronger text */
+html.high-contrast h1,
+html.high-contrast h2,
+html.high-contrast h3,
+html.high-contrast h4,
+html.high-contrast h5,
+html.high-contrast h6,
+html.high-contrast label,
+html.high-contrast th,
+html.high-contrast td,
+html.high-contrast p,
+html.high-contrast span,
+html.high-contrast div,
+html.high-contrast small{
+  color: inherit;
+}
+
+html.high-contrast .helper,
+html.high-contrast .form-sub,
+html.high-contrast .header-sub,
+html.high-contrast .setting-desc,
+html.high-contrast .empty-state{
+  color: #ffffff;
+  opacity: 0.95;
+}
+
+/* Inputs */
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea{
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+html.high-contrast input::placeholder,
+html.high-contrast textarea::placeholder{
+  color: #e5e7eb;
+  opacity: 1;
+}
+
+html.high-contrast input:focus,
+html.high-contrast select:focus,
+html.high-contrast textarea:focus{
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+/* Tables */
+html.high-contrast .table-wrap th,
+html.high-contrast .table-wrap td{
+  border-bottom: 2px solid rgba(255,255,255,0.35);
+}
+
+html.high-contrast .table-wrap th{
+  color: #ffffff;
+  font-weight: 900;
+}
+
+html.high-contrast .table-wrap tbody tr:hover{
+  background: #1a1a1a;
+}
+
+/* Links */
+html.high-contrast a{
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+/* Generic buttons */
+html.high-contrast button{
+  font-weight: 900;
+}
+
+/* Optional stronger outlines for keyboard users */
+html.high-contrast *:focus-visible{
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+main > .page-title{
+  margin-bottom:24px;
+}

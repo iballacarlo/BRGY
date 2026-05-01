@@ -1,0 +1,169 @@
+.form-group{
+  margin-bottom:16px;
+  display:flex;
+  flex-direction:column;
+}
+
+.field-label,
+.form-group label{
+  margin-bottom:6px;
+  font-weight:700;
+  color: var(--text-color);
+}
+
+/* wrapper */
+.input-wrap{
+  position:relative;
+  width:100%;
+}
+
+/* consistent input sizing */
+.field-input,
+.form-group input,
+.form-group textarea,
+.form-group select{
+  width:100%;
+  height:44px;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid var(--border-color);
+  box-sizing:border-box;
+
+  background:var(--card-bg);
+  color:var(--text-color);
+  outline:none;
+
+  transition: box-shadow .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+/* textarea should still be bigger */
+.form-group textarea{
+  height:auto;
+  min-height:100px;
+  resize:vertical;
+}
+
+/* placeholder */
+.field-input::placeholder,
+.form-group input::placeholder,
+.form-group textarea::placeholder{
+  color: var(--muted-color);
+  opacity: 1;
+}
+
+/* reserve space when toggle exists */
+.input-wrap.has-toggle .field-input,
+.input-wrap.has-toggle input{
+  padding-right:92px;
+}
+
+/* show/hide inside input */
+.showbtn{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+
+  height:32px;
+  padding:0 12px;
+  min-width:60px;
+
+  border-radius:10px;
+  border:1px solid var(--border-color);
+  background:var(--surface-2);
+  color:var(--text-color);
+
+  cursor:pointer;
+  font-weight:800;
+  font-size:0.85rem;
+  line-height:1;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.showbtn:hover{
+  background: color-mix(in srgb, var(--surface-2) 70%, var(--primary-color) 10%);
+}
+
+/* focus */
+.field-input:focus,
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+/* error */
+.error{
+  color: var(--danger-color);
+  font-size:0.85rem;
+  margin-top:6px;
+  font-weight:700;
+}
+
+/* optional red border when has error */
+.form-group.has-error input,
+.form-group.has-error textarea,
+.form-group.has-error select,
+.form-group.has-error .field-input{
+  border-color: color-mix(in srgb, var(--danger-color) 55%, transparent);
+}
+
+.form-group.has-error input:focus,
+.form-group.has-error textarea:focus,
+.form-group.has-error select:focus,
+.form-group.has-error .field-input:focus{
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger-color) 15%, transparent);
+}
+
+/* =========================
+   HIGH CONTRAST MODE
+========================= */
+
+html.high-contrast .field-label,
+html.high-contrast .form-group label{
+  color:#ffffff;
+  font-weight:900;
+}
+
+html.high-contrast .field-input,
+html.high-contrast .form-group input,
+html.high-contrast .form-group textarea,
+html.high-contrast .form-group select{
+  background:#000000;
+  color:#ffffff;
+  border:2px solid #ffffff;
+}
+
+html.high-contrast .field-input::placeholder,
+html.high-contrast .form-group input::placeholder,
+html.high-contrast .form-group textarea::placeholder{
+  color:#e5e7eb;
+}
+
+html.high-contrast .showbtn{
+  background:#000000;
+  color:#ffffff;
+  border:2px solid #ffffff;
+}
+
+html.high-contrast .showbtn:hover{
+  background:#1a1a1a;
+}
+
+html.high-contrast .field-input:focus,
+html.high-contrast .form-group input:focus,
+html.high-contrast .form-group textarea:focus,
+html.high-contrast .form-group select:focus{
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+html.high-contrast .error{
+  color:#ff8a8a;
+}

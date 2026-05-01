@@ -1,0 +1,30 @@
+:root{
+  --primary-color: #1f6feb;
+  --background-color: #f6f7fb;
+  --card-bg: #ffffff;
+  --text-color: #1f2937;
+  --muted-color: #6b7280;
+  --border-radius: 10px;
+  --gap: 8px;
+  --shadow: 0 4px 12px rgba(16,24,40,0.06);
+  --radius: 10px;
+  --font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+[data-theme='dark']{
+  --background-color: #0b1220;
+  --card-bg: #0f1724;
+  --text-color: #e6eef8;
+}
+
+[data-contrast='high']{
+  --primary-color: #004aad;
+  --text-color: #000000;
+}
+
+[data-font='small']{ font-size: 13px }
+[data-font='medium']{ font-size: 16px }
+[data-font='large']{ font-size: 20px }
+
+html,body,#root{ height:100%; }
+body{ margin:0; font-family: var(--font-family); background:var(--background-color); color:var(--text-color); }

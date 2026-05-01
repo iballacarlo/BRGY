@@ -1,0 +1,78 @@
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  min-height:40px;
+  padding:10px 14px;
+  border-radius:12px;
+
+  border:1px solid transparent;
+  background: var(--primary-color);
+  color:#ffffff;
+
+  cursor:pointer;
+  font-weight:900;
+  font-size:0.95rem;
+  line-height:1;
+  white-space:nowrap;
+
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease, opacity .15s ease;
+}
+
+.btn:hover{
+  filter: brightness(0.97);
+}
+
+.btn:focus-visible{
+  outline:none;
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.btn.secondary{
+  background: var(--card-bg);
+  color: var(--text-color);
+  border:1px solid var(--border-color);
+}
+
+.btn.secondary:hover{
+  background: var(--surface-2);
+}
+
+.btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  filter:none;
+}
+
+/* =========================
+   HIGH CONTRAST MODE
+========================= */
+
+html.high-contrast .btn{
+  background:#ffffff;
+  color:#000000;
+  border:2px solid #ffffff;
+  font-weight:900;
+}
+
+html.high-contrast .btn:hover{
+  background:#f3f4f6;
+}
+
+html.high-contrast .btn.secondary{
+  background:#000000;
+  color:#ffffff;
+  border:2px solid #ffffff;
+}
+
+html.high-contrast .btn.secondary:hover{
+  background:#1a1a1a;
+}
+
+html.high-contrast .btn:focus-visible{
+  outline:3px solid var(--primary-color);
+  outline-offset:2px;
+  box-shadow:none;
+}
