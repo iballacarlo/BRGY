@@ -53,7 +53,7 @@ export default function ManageResidents(){
   }
 
   return(
-    <div className="app-shell">
+    <div className="app-shell manage-residents-page">
       <Sidebar/>
 
       <div className="main-area">
@@ -97,6 +97,8 @@ export default function ManageResidents(){
                         </Button>
 
                         <Button
+                          variant="danger"
+                          className="resident-delete-btn"
                           onClick={()=>removeResident(it.resident_id)}
                         >
                           Delete

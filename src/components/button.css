@@ -40,6 +40,16 @@
   background: var(--surface-2);
 }
 
+.btn.danger{
+  background: var(--danger-color);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.btn.danger:hover{
+  background: color-mix(in srgb, var(--danger-color) 82%, transparent);
+}
+
 .btn:disabled{
   opacity:0.6;
   cursor:not-allowed;

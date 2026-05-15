@@ -183,7 +183,122 @@
   background: var(--danger-soft);
 }
 
+.avatar-item.mobile-only,
+.settings-btn.mobile-only{
+  display: none;
+}
+
+.mobile-settings-wrapper{
+  position: relative;
+}
+
 /* responsive */
+@media(max-width:700px){
+  .top-left{
+    min-width: 0;
+    max-width: 55%;
+    flex: 0 1 auto;
+  }
+
+  .barangay-name{
+    font-size: 0.75rem;
+    font-weight: 900;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
+  .header-sub{
+    display: none;
+  }
+
+  .top-right{
+    min-width: 0;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+
+  .header-controls{
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .header-controls .small{
+    padding: 0 10px;
+    font-size: 0.8rem;
+    height: 36px;
+  }
+
+  .settings-btn.mobile-only{
+    display: inline-flex;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+    color: var(--text-color);
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .settings-btn.mobile-only:hover{
+    background: var(--surface-2);
+  }
+
+  .settings-gear{
+    font-size: 1.05rem;
+    line-height: 1;
+    color: var(--primary-color);
+  }
+
+  .settings-text{
+    line-height: 1;
+  }
+
+  .settings-dropdown{
+    position: absolute;
+    top: 46px;
+    right: 0;
+    width: 220px;
+    border-radius: 14px;
+    padding: 8px;
+    background: color-mix(in srgb, var(--card-bg) 94%, transparent);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .settings-item{
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 900;
+    color: var(--text-color);
+  }
+
+  .settings-item:hover{
+    background: var(--surface-2);
+  }
+
+  .avatar-item.mobile-only{
+    display: block;
+  }
+}
+
 @media(max-width:600px){
   .barangay-name{ font-size:0.95rem; }
   .header-controls .small{ padding:0 12px; }

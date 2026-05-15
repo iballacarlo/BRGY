@@ -68,6 +68,20 @@ export default function ComplaintForm(){
     e.target.value = ''
   }
 
+  function handleFileUploadKeyDown(e){
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault()
+      e.currentTarget.click()
+    }
+  }
+
+  function handlePreviewKeyDown(e, preview){
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault()
+      setExpandedPreview(preview)
+    }
+  }
+
   function removeFile(index){
     // Clean up the preview URL
     if (previews[index]) {
@@ -293,7 +307,14 @@ export default function ComplaintForm(){
                     onChange={handleFileChange}
                     style={{ display: 'none' }}
                   />
-                  <label htmlFor="file-upload" className="file-upload-btn-small">
+                  <label
+                    htmlFor="file-upload"
+                    className="file-upload-btn-small"
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Choose images or videos to upload"
+                    onKeyDown={handleFileUploadKeyDown}
+                  >
                     <span className="upload-icon">📎</span>
                     <span className="upload-text-small">Choose</span>
                   </label>
@@ -306,7 +327,11 @@ export default function ComplaintForm(){
                           <div 
                             className="preview-thumbnail"
                             onClick={() => setExpandedPreview(preview)}
+                            onKeyDown={(e) => handlePreviewKeyDown(e, preview)}
+                            tabIndex={0}
+                            role="button"
                             title="Click to expand"
+                            aria-label="Open file preview"
                           >
                             {preview.type.startsWith('image/') ? (
                               <img src={preview.url} alt={`Preview ${index}`} />

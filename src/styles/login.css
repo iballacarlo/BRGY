@@ -453,6 +453,33 @@ html.high-contrast{
   display:block;
 }
 
+.login-card .field-input{
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+html.dark .login-card .field-input{
+  background: #111827;
+  color: #f9fafb;
+  border-color: rgba(255,255,255,0.18);
+}
+
+html.dark .login-card .field-input::placeholder{
+  color: rgba(241,245,249,0.6);
+}
+
+html.dark .login-card .field-label,
+html.dark .login-card .form-group label{
+  color: #f9fafb;
+}
+
+html.dark .login-card .showbtn{
+  background: rgba(255,255,255,0.08);
+  color: #f9fafb;
+  border-color: rgba(255,255,255,0.18);
+}
+
 .login-body{
   width:100%;
   display:flex;

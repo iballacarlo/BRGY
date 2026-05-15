@@ -8,8 +8,8 @@ import { Settings, Tags, Save, RotateCcw } from 'lucide-react'
 export default function AdminSettings(){
   const [categories, setCategories] = useState(['Noise', 'Garbage', 'Traffic'])
   const [newCat, setNewCat] = useState('')
-  const [systemName, setSystemName] = useState('City of Bacoor')
-  const [contactEmail, setContactEmail] = useState('admin@bacoor.gov.ph')
+  const [systemName, setSystemName] = useState('Barangay Service & Complaint Management System')
+  const [contactEmail, setContactEmail] = useState('brgy.mambog.ii@gmail.com')
 
   function addCategory(){
     const v = newCat.trim()
@@ -26,8 +26,8 @@ export default function AdminSettings(){
   function resetDefaults(){
     setCategories(['Noise', 'Garbage', 'Traffic'])
     setNewCat('')
-    setSystemName('City of Bacoor')
-    setContactEmail('admin@bacoor.gov.ph')
+    setSystemName('Barangay Service & Complaint Management System')
+    setContactEmail('brgy.mambog.ii@gmail.com')
   }
 
   function save(){

@@ -6,7 +6,9 @@ function getApiBase(){
 
   // Default backend URL expected by the project README.
   // If you run PHP on a different host/port, set VITE_API_BASE.
-  return 'http://localhost/barangay-api/api.php'
+  // For mobile testing, use the same host as the frontend
+  const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+  return `http://${host}/barangay-api/api.php`
 }
 
 const api = axios.create({

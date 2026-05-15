@@ -10,6 +10,13 @@
   padding: 18px;
 }
 
+@media(max-width:700px){
+  .history-card{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* =========================
    Controls (Filter + Search)
 ========================= */
@@ -47,12 +54,14 @@
 ========================= */
 
 .table-wrap{
-  overflow:auto;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
+  min-width: 100%;
 }
 
 thead th{
@@ -63,13 +72,26 @@ thead th{
   color: var(--muted, #6b7280);
   border-bottom:1px solid rgba(0,0,0,0.08);
   background: transparent;
+  white-space: nowrap;
 }
 
 tbody td{
   padding:14px 10px;
   border-bottom:1px solid rgba(0,0,0,0.05);
-  font-weight:700;
-  color: var(--text, #111827);
+  white-space: nowrap;
+}
+
+@media(max-width:700px){
+  table{
+    min-width: auto;
+  }
+
+  thead th,
+  tbody td{
+    padding: 10px 8px;
+    font-size: 0.85rem;
+    white-space: normal;
+  }
 }
 
 tbody tr:hover{
@@ -116,10 +138,12 @@ html.dark .history-card{
 
 html.dark thead th{
   border-bottom:1px solid rgba(255,255,255,0.10);
+  color: var(--muted);
 }
 
 html.dark tbody td{
   border-bottom:1px solid rgba(255,255,255,0.08);
+  color: var(--text);
 }
 
 html.dark tbody tr:hover{
@@ -187,6 +211,21 @@ html.dark .filter-group input{
 .danger-action:hover{
   background: rgba(220, 38, 38, 0.16);
   border-color: rgba(220, 38, 38, 0.40);
+}
+
+.manage-residents-page .resident-delete-btn{
+  border:1px solid #c72222;
+  background: #b91c1c;
+  color: #ffffff;
+  border-radius:10px;
+  padding:6px 12px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.15s ease;
+}
+
+.manage-residents-page .resident-delete-btn:hover{
+  background: #b91c1c;
 }
 
 html.dark .danger-action{

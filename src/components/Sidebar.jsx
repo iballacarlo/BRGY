@@ -27,6 +27,24 @@ export default function Sidebar(){
   // Logout modal
   const [confirmOpen, setConfirmOpen] = useState(false)
   const modalRef = useRef(null)
+  const navRef = useRef(null)
+
+  // Sidebar keyboard navigation
+  function onSidebarNavKeyDown(e){
+    if(e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
+    const nav = navRef.current
+    if(!nav) return
+    const items = Array.from(nav.querySelectorAll('a, button.linklike'))
+    if(items.length === 0) return
+
+    const currentIndex = items.indexOf(document.activeElement)
+    const nextIndex = e.key === 'ArrowDown'
+      ? (currentIndex === -1 ? 0 : Math.min(currentIndex + 1, items.length - 1))
+      : (currentIndex === -1 ? items.length - 1 : Math.max(currentIndex - 1, 0))
+
+    items[nextIndex].focus()
+    e.preventDefault()
+  }
 
   // Apply collapsed class to <html> so CSS can shift main content too
   useEffect(() => {
@@ -84,7 +102,7 @@ export default function Sidebar(){
           </button>
         </div>
 
-        <nav>
+        <nav ref={navRef} onKeyDown={onSidebarNavKeyDown}>
           <ul>
             {/* ADMIN LINKS */}
             {user?.role === 'staff' || user?.role === 'admin' ? (

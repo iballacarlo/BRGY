@@ -1,23 +1,40 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useAuth } from './AuthContext'
 
 const SettingsContext = createContext()
 
+function getSettingsKey(user){
+  return `settings_${user?.id || 'guest'}`
+}
+
 export function SettingsProvider({ children }){
+  const { user } = useAuth()
   const [dark, setDark] = useState(false)
   const [contrast, setContrast] = useState(false)
   const [fontSize, setFontSize] = useState('medium')
   const [tts, setTts] = useState(false)
   const [screenReader, setScreenReader] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+
+  const storageKey = getSettingsKey(user)
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('settings') || '{}')
+    setLoaded(false)
 
-    if(saved.dark !== undefined) setDark(saved.dark)
-    if(saved.contrast !== undefined) setContrast(saved.contrast)
-    if(saved.fontSize) setFontSize(saved.fontSize)
-    if(saved.tts !== undefined) setTts(saved.tts)
-    if(saved.screenReader !== undefined) setScreenReader(saved.screenReader)
-  }, [])
+    let saved = {}
+    try {
+      saved = JSON.parse(localStorage.getItem(storageKey) || '{}')
+    } catch {
+      saved = {}
+    }
+
+    setDark(saved.dark !== undefined ? saved.dark : false)
+    setContrast(saved.contrast !== undefined ? saved.contrast : false)
+    setFontSize(saved.fontSize || 'medium')
+    setTts(saved.tts !== undefined ? saved.tts : false)
+    setScreenReader(saved.screenReader !== undefined ? saved.screenReader : false)
+    setLoaded(true)
+  }, [storageKey])
 
   useEffect(() => {
     const root = document.documentElement
@@ -43,13 +60,6 @@ export function SettingsProvider({ children }){
   }, [fontSize])
 
   useEffect(() => {
-    localStorage.setItem(
-      'settings',
-      JSON.stringify({ dark, contrast, fontSize, tts, screenReader })
-    )
-  }, [dark, contrast, fontSize, tts, screenReader])
-
-  useEffect(() => {
     if(tts && window.speechSynthesis){
       const msg = new SpeechSynthesisUtterance(
         'Accessibility: Text to speech enabled'
@@ -59,6 +69,32 @@ export function SettingsProvider({ children }){
     }
   }, [tts])
 
+  const saveSettings = () => {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({ dark, contrast, fontSize, tts, screenReader })
+    )
+  }
+
+  const resetSettings = () => {
+    setDark(false)
+    setContrast(false)
+    setFontSize('medium')
+    setTts(false)
+    setScreenReader(false)
+    // Save reset state to localStorage
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        dark: false,
+        contrast: false,
+        fontSize: 'medium',
+        tts: false,
+        screenReader: false
+      })
+    )
+  }
+
   return (
     <SettingsContext.Provider
       value={{
@@ -66,7 +102,9 @@ export function SettingsProvider({ children }){
         contrast, setContrast,
         fontSize, setFontSize,
         tts, setTts,
-        screenReader, setScreenReader
+        screenReader, setScreenReader,
+        saveSettings,
+        resetSettings
       }}
     >
       {children}

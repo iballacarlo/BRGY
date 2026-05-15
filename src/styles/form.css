@@ -17,7 +17,7 @@
   box-shadow: var(--shadow, 0 18px 45px rgba(16, 24, 40, 0.12));
   padding: 14px 16px;
   max-height: calc(100vh - 150px);
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 }
@@ -75,7 +75,7 @@
   gap: 8px 14px;
   align-items:start;
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Labels */
@@ -374,6 +374,16 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
+.file-upload-btn-small:focus-visible,
+.preview-thumbnail:focus-visible,
+.type-chip:focus-visible,
+.font-chip:focus-visible,
+.avatar-btn:focus-visible,
+.btn:focus-visible{
+  outline: 3px solid rgba(37, 99, 235, 0.75);
+  outline-offset: 2px;
+}
+
 .upload-icon{
   font-size: 1.2rem;
   opacity: 0.7;
@@ -567,6 +577,90 @@ html.dark .type-chip.active{
   color: rgb(96, 165, 250);
   border-color: rgba(96, 165, 250, 0.28);
   box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+}
+
+html.dark .ui-input{
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+}
+
+html.dark .ui-input:focus{
+  border-color: rgba(96, 165, 250, 0.55);
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
+}
+
+html.dark .ui-textarea{
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder{
+  color: rgba(226, 232, 240, 0.65);
+  opacity: 1;
+}
+
+html.dark .ui-readonly{
+  background: rgba(30, 41, 59, 0.85);
+  color: rgba(226, 232, 240, 0.9);
+}
+
+html.dark .file-upload-btn-small{
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text);
+}
+
+html.dark .file-upload-btn-small:hover{
+  border-color: rgba(96, 165, 250, 0.4);
+  background: rgba(96, 165, 250, 0.08);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.15);
+}
+
+html.dark .upload-icon{
+  opacity: 0.8;
+}
+
+html.high-contrast .type-chips {
+  background: #111;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+html.high-contrast .type-chip {
+  background: #111;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+html.high-contrast .type-chip:hover,
+html.high-contrast .type-chip:focus-visible {
+  background: #222;
+  border-color: #00b4ff;
+  color: #fff;
+}
+
+html.high-contrast .type-chip.active {
+  background: #001e3c;
+  color: #ffd60a;
+  border-color: #ffd60a;
+  box-shadow: 0 0 0 3px rgba(255, 214, 10, 0.35);
+}
+
+html.high-contrast .file-upload-btn-small {
+  background: #111;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+html.high-contrast .file-upload-btn-small:hover,
+html.high-contrast .file-upload-btn-small:focus-visible {
+  background: #222;
+  border-color: #ffd60a;
+  box-shadow: 0 0 0 3px rgba(255, 214, 10, 0.55);
+  color: #fff;
 }
 
 /* Actions row */
@@ -832,7 +926,24 @@ html.dark .setting-row{
 html.dark .font-chip{
   background: rgba(15,23,42,0.65);
   border-color: rgba(255,255,255,0.12);
-}/* A4 Document Preview Styles */
+  color: var(--text);
+}
+
+html.dark .font-chip.active{
+  color: rgb(96, 165, 250);
+}
+
+.form-notice{
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* A4 Document Preview Styles */
 .process-modal-grid-single{
   display: grid;
   grid-template-columns: 1fr 1fr;

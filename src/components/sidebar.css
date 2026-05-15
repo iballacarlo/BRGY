@@ -15,8 +15,7 @@
   height:100vh;
   position:fixed;
   top:0;
-  left:0;
-
+  left:0;  bottom:0;
   display:flex;
   flex-direction:column;
 
@@ -105,7 +104,8 @@ html.sidebar-collapsed .collapse-btn{
 .sidebar nav{
   flex:1;
   padding:10px 10px 14px;
-  overflow:hidden;
+  overflow-y:auto;
+  overflow-x:hidden;
 }
 
 html.sidebar-collapsed .sidebar nav{
@@ -318,7 +318,58 @@ html.sidebar-collapsed .sidebar .logout{
 
 /* RESPONSIVE */
 @media(max-width:700px){
-  .sidebar{ display:none; }
+  .sidebar{
+    width: var(--sidebar-w);
+  }
+  
+  html.sidebar-collapsed .sidebar{
+    width: var(--sidebar-mini-w);
+  }
+
+  .sidebar-brand{
+    display: block;
+  }
+
+  html.sidebar-collapsed .sidebar-brand{
+    display: none;
+  }
+  
+  .sidebar-top{
+    justify-content: space-between;
+  }
+
+  html.sidebar-collapsed .sidebar-top{
+    justify-content: center;
+  }
+  
+  .sidebar a,
+  .sidebar .linklike{
+    padding: 12px 10px;
+    gap: 10px;
+  }
+
+  html.sidebar-collapsed .sidebar a,
+  html.sidebar-collapsed .sidebar .linklike{
+    justify-content: center;
+    gap: 0;
+  }
+  
+  html.sidebar-collapsed .sidebar a span,
+  html.sidebar-collapsed .sidebar .linklike span{
+    display: none;
+  }
+  
+  .sidebar nav{
+    padding-top: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 14px;
+    overflow-y:auto;
+  }
+  
+  .sidebar .logout{
+    padding: 12px 8px;
+  }
 }
 
 html.high-contrast .sidebar{

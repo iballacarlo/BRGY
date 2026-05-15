@@ -62,6 +62,14 @@ export function AuthProvider({ children }){
   }
 
   function logout(){
+    if(user?.id){
+      const currentKey = `settings_${user.id}`
+      const guestKey = 'settings_guest'
+      const saved = localStorage.getItem(currentKey)
+      if(saved){
+        localStorage.setItem(guestKey, saved)
+      }
+    }
     localStorage.removeItem('token')
     setUser(null)
   }

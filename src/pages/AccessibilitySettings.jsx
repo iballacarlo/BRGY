@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import { useSettings } from '../context/SettingsContext'
@@ -11,15 +11,64 @@ export default function AccessibilitySettings(){
     contrast, setContrast,
     fontSize, setFontSize,
     tts, setTts,
-    screenReader, setScreenReader
+    screenReader, setScreenReader,
+    saveSettings,
+    resetSettings
   } = useSettings()
 
-  function reset(){
-    setDark(false)
-    setContrast(false)
-    setFontSize('medium')
-    setTts(false)
-    setScreenReader(false)
+  const [notice, setNotice] = useState('')
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmAction, setConfirmAction] = useState(null)
+  const modalRef = useRef(null)
+
+  useEffect(() => {
+    if(!notice) return
+    const timer = setTimeout(() => setNotice(''), 4000)
+    return () => clearTimeout(timer)
+  }, [notice])
+
+  useEffect(() => {
+    function onEsc(e){
+      if(e.key === 'Escape') setConfirmOpen(false)
+    }
+
+    if(confirmOpen){
+      document.addEventListener('keydown', onEsc)
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', onEsc)
+      document.body.style.overflow = ''
+    }
+  }, [confirmOpen])
+
+  function onOverlayClick(e){
+    if(modalRef.current && !modalRef.current.contains(e.target)){
+      setConfirmOpen(false)
+    }
+  }
+
+  function handleSaveClick(){
+    setConfirmAction('save')
+    setConfirmOpen(true)
+  }
+
+  function handleResetClick(){
+    setConfirmAction('reset')
+    setConfirmOpen(true)
+  }
+
+  function handleConfirm(){
+    if(confirmAction === 'save'){
+      saveSettings()
+      setNotice('Accessibility settings saved.')
+    } else if(confirmAction === 'reset'){
+      resetSettings()
+      setNotice('Accessibility settings reset to default.')
+    }
+    setConfirmOpen(false)
+    setConfirmAction(null)
   }
 
   return (
@@ -117,17 +166,59 @@ export default function AccessibilitySettings(){
               </div>
             </div>
 
+            {notice && <div className="form-notice">{notice}</div>}
+
             <div className="form-actions">
-              <Button variant="secondary" onClick={reset}>
+              <Button variant="secondary" onClick={handleResetClick}>
                 Reset to Default
               </Button>
-              <Button>
+              <Button onClick={handleSaveClick}>
                 Save
               </Button>
             </div>
           </div>
         </main>
       </div>
+
+      {/* CONFIRMATION MODAL */}
+      {confirmOpen && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={confirmAction === 'save' ? 'Save settings confirmation' : 'Reset settings confirmation'}
+          onMouseDown={onOverlayClick}
+        >
+          <div className="modal-card" ref={modalRef}>
+            <h3>
+              {confirmAction === 'save' ? 'Save Settings' : 'Reset Settings'}
+            </h3>
+            <p>
+              {confirmAction === 'save'
+                ? 'Are you sure you want to save these accessibility settings?'
+                : 'Are you sure you want to reset accessibility settings to default?'}
+            </p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn secondary"
+                onClick={() => setConfirmOpen(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className={`btn ${confirmAction === 'reset' ? 'danger' : ''}`}
+                onClick={handleConfirm}
+              >
+                {confirmAction === 'save' ? 'Yes, Save' : 'Yes, Reset'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
