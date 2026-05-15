@@ -1015,3 +1015,69 @@ html.dark .font-chip.active{
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   margin-top: 12px;
 }
+
+/* =========================
+   Date Input Dark Mode & High Contrast
+========================= */
+
+/* Dark Mode - Date Input */
+html.dark input[type="date"],
+html.dark input[type="time"],
+html.dark input[type="datetime-local"]{
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.65);
+}
+
+/* Dark Mode - Date Input Calendar Icon */
+html.dark input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark input[type="time"]::-webkit-calendar-picker-indicator,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(1.2);
+  cursor: pointer;
+}
+
+/* Dark Mode - Date Input Placeholder */
+html.dark input[type="date"]::placeholder{
+  color: rgba(226, 232, 240, 0.65);
+}
+
+/* High Contrast Mode - Date Input */
+html.high-contrast input[type="date"],
+html.high-contrast input[type="time"],
+html.high-contrast input[type="datetime-local"]{
+  color: #ffffff;
+  background: #111;
+  border: 2px solid #ffffff;
+}
+
+/* High Contrast Mode - Date Input Calendar Icon */
+html.high-contrast input[type="date"]::-webkit-calendar-picker-indicator,
+html.high-contrast input[type="time"]::-webkit-calendar-picker-indicator,
+html.high-contrast input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+  filter: invert(1) brightness(1.5);
+  cursor: pointer;
+}
+
+/* High Contrast Mode - Date Input Focus */
+html.high-contrast input[type="date"]:focus,
+html.high-contrast input[type="time"]:focus,
+html.high-contrast input[type="datetime-local"]:focus{
+  outline: 3px solid #ffd60a;
+  outline-offset: 2px;
+}
+
+/* Firefox support for date inputs in dark mode */
+html.dark input[type="date"]::-moz-calendar-picker-indicator,
+html.dark input[type="time"]::-moz-calendar-picker-indicator,
+html.dark input[type="datetime-local"]::-moz-calendar-picker-indicator{
+  filter: invert(1) brightness(1.2);
+  cursor: pointer;
+}
+
+/* Firefox support for date inputs in high contrast */
+html.high-contrast input[type="date"]::-moz-calendar-picker-indicator,
+html.high-contrast input[type="time"]::-moz-calendar-picker-indicator,
+html.high-contrast input[type="datetime-local"]::-moz-calendar-picker-indicator{
+  filter: invert(1) brightness(1.5);
+  cursor: pointer;
+}

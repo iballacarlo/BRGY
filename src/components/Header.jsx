@@ -62,13 +62,31 @@ export default function Header(){
     setSettingsOpen(false)
   }
 
-  // simple initials (fallback)
-  const initials = (user?.name || 'User')
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(w => w[0].toUpperCase())
-    .join('')
+  // first-letter of first name (fallbacks to email first char or 'U')
+  const firstName = user?.first_name || (user?.name || '').split(' ')[0] || ''
+  const initials = firstName
+    ? firstName[0].toUpperCase()
+    : (user?.email ? user.email[0].toUpperCase() : 'U')
+
+  // parse name parts for avatar modal display
+  function parseName(obj){
+    const raw = obj?.name || ''
+    const first = obj?.first_name || raw.split(' ')[0] || ''
+    const middle = obj?.middle_name || (() => {
+      const parts = raw.trim().split(/\s+/)
+      return parts.length > 2 ? parts.slice(1, -1).join(' ') : ''
+    })()
+    const last = obj?.last_name || (() => {
+      const parts = raw.trim().split(/\s+/)
+      return parts.length > 1 ? parts[parts.length - 1] : ''
+    })()
+    const suffix = obj?.suffix || (() => {
+      const s = raw.trim().split(' ').pop().replace('.','').toUpperCase()
+      return ['JR','SR','II','III','IV','V'].includes(s) ? s : ''
+    })()
+    return { first, middle, last, suffix }
+  }
+  const nameParts = parseName(user || {})
 
   return (
     <header className="top-header">
@@ -143,7 +161,10 @@ export default function Header(){
           {menuOpen && (
             <div className="avatar-menu" role="menu" aria-label="Account menu">
               <div className="avatar-menu-head">
-                <div className="avatar-menu-name">{user?.name || 'User'}</div>
+                <div className="avatar-menu-name">{nameParts.first || ''}</div>
+                <div className="avatar-menu-name">{nameParts.middle || ''}</div>
+                <div className="avatar-menu-name">{nameParts.last || ''}</div>
+                {nameParts.suffix ? <div className="avatar-menu-name">{nameParts.suffix}</div> : null}
                 <div className="avatar-menu-email">{user?.email || ''}</div>
               </div>
 

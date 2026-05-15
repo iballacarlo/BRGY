@@ -258,6 +258,18 @@
     color: var(--primary-color);
   }
 
+  .top-header{
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-mini-w);
+    width: calc(100vw - var(--sidebar-mini-w));
+    z-index: 30;
+  }
+
+  .main-area{
+    padding-top: var(--layout-header-h);
+  }
+
   .settings-text{
     line-height: 1;
   }

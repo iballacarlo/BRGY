@@ -74,7 +74,6 @@ export default function ManageResidents(){
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Phone</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -86,7 +85,6 @@ export default function ManageResidents(){
                       <td>{it.resident_id}</td>
                       <td>{it.first_name} {it.last_name}</td>
                       <td>{it.email}</td>
-                      <td>{it.contact_number}</td>
                       <td><StatusBadge status={it.account_status}/></td>
                       <td style={{display:'flex',gap:8}}>
                         <Button

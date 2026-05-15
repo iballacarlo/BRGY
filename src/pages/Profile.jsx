@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import { useAuth } from '../context/AuthContext'
+import mockApi from '../api/mockApi'
 import InputField from '../components/InputField'
 import Button from '../components/Button'
 
@@ -30,20 +31,36 @@ export default function Profile(){
 
   const { user } = useAuth()
 
-  const initial = useMemo(() => splitName(user?.name), [user?.name])
+  const initial = useMemo(() => {
+    const parsed = splitName(user?.name)
+    const first = user?.first_name || user?.firstName || user?.fname || parsed.first
+    const middle = user?.middle_name || user?.middleName || user?.middle || parsed.middle
+    const last = user?.last_name || user?.lastName || user?.lname || parsed.last
+    const suffix = user?.suffix || user?.suf || parsed.suffix
+    return { first, middle, last, suffix }
+  }, [user])
 
   const [first,setFirst] = useState(initial.first)
   const [middle,setMiddle] = useState(initial.middle)
   const [last,setLast] = useState(initial.last)
   const [suffix,setSuffix] = useState(initial.suffix)
 
+  // keep fields in sync when user/context updates
+  React.useEffect(() => {
+    setFirst(initial.first)
+    setMiddle(initial.middle)
+    setLast(initial.last)
+    setSuffix(initial.suffix)
+  }, [initial.first, initial.middle, initial.last, initial.suffix])
+
   const [msg,setMsg] = useState('')
   const [saving,setSaving] = useState(false)
 
-  const email = user?.email || ''
+  const email = user?.email || user?.username || mockApi.getCurrentUser()?.email || ''
+
+  const { updateProfile } = useAuth()
 
   async function save(){
-
     setMsg('')
 
     if(!first.trim() || !last.trim()){
@@ -51,29 +68,27 @@ export default function Profile(){
       return
     }
 
-    const fullName =
-      `${first} ${middle ? middle + ' ' : ''}${last}${suffix ? ' ' + suffix : ''}`
+    const fullName = `${first} ${middle ? middle + ' ' : ''}${last}${suffix ? ' ' + suffix : ''}`
 
     setSaving(true)
 
     try{
-
-      const res = await fetch('/profile_update.php',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        credentials:'include',
-        body: JSON.stringify({ name: fullName })
+      const res = await updateProfile({
+        name: fullName,
+        first_name: first,
+        middle_name: middle,
+        last_name: last,
+        suffix: suffix
       })
 
       if(!res.ok){
-        setMsg('Failed to save.')
+        setMsg(res.message || 'Failed to save.')
         setSaving(false)
         return
       }
 
       setMsg('Saved successfully.')
-
-    }catch{
+    }catch(err){
       setMsg('Network error.')
     }
 

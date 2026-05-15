@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import Button from '../components/Button'
@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 
 export default function ComplaintForm(){
   const { user } = useAuth()
+  const [categories, setCategories] = useState([])
   const [form, setForm] = useState({
     resident_name: '',
     category: '',
@@ -38,6 +39,10 @@ export default function ComplaintForm(){
   const [expandedPreview, setExpandedPreview] = useState(null) // For expanded view
 
   const nav = useNavigate()
+
+  useEffect(() => {
+    setCategories(mockApi.listCategories())
+  }, [])
 
   function setField(key, value){
     setForm(prev => ({ ...prev, [key]: value }))
@@ -209,9 +214,13 @@ export default function ComplaintForm(){
                   onChange={e => setField('category', e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  <option value="Noise">Noise</option>
-                  <option value="Garbage">Garbage</option>
-                  <option value="Traffic">Traffic</option>
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <option key={category} value={category}>{category}</option>
+                    ))
+                  ) : (
+                    <option value="">No categories available</option>
+                  )}
                 </select>
                 {errors.category && <div className="field-error">{errors.category}</div>}
               </div>

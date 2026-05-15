@@ -3,6 +3,8 @@
 const KEY_USERS = 'mock_users'
 const KEY_COMPLAINTS = 'mock_complaints'
 const KEY_DOCS = 'mock_docs'
+const KEY_CATEGORIES = 'mock_categories'
+const KEY_SYSTEM_SETTINGS = 'mock_system_settings'
 
 function load(key){
   return JSON.parse(localStorage.getItem(key) || '[]')
@@ -10,6 +12,14 @@ function load(key){
 
 function save(key, data){
   localStorage.setItem(key, JSON.stringify(data))
+}
+
+function loadJson(key, defaultValue){
+  try {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue))
+  } catch {
+    return defaultValue
+  }
 }
 
 function nowIso(){
@@ -64,6 +74,11 @@ function seed(){
   // Only initialize empty arrays if they don't exist - don't clear existing data!
   if(!localStorage.getItem(KEY_COMPLAINTS)) save(KEY_COMPLAINTS, [])
   if(!localStorage.getItem(KEY_DOCS)) save(KEY_DOCS, [])
+  if(!localStorage.getItem(KEY_CATEGORIES)) save(KEY_CATEGORIES, ['Noise', 'Garbage', 'Traffic'])
+  if(!localStorage.getItem(KEY_SYSTEM_SETTINGS)) save(KEY_SYSTEM_SETTINGS, {
+    systemName: 'Barangay Service & Complaint Management System',
+    contactEmail: 'brgy.mambog.ii@gmail.com'
+  })
 }
 
 seed()
@@ -135,6 +150,15 @@ const api = {
     return users.find(u => u.id === id) || null
   },
 
+  // Update a user's profile fields (mock support)
+  updateUser(id, updates){
+    const users = load(KEY_USERS)
+    const idx = users.findIndex(u => u.id === id)
+    if(idx === -1) return null
+    users[idx] = { ...users[idx], ...updates }
+    save(KEY_USERS, users)
+    return users[idx]
+  },
   // =========================
   // Complaints
   // =========================
@@ -209,6 +233,29 @@ const api = {
     save(KEY_COMPLAINTS, list)
 
     return { success:true, data:list[idx] }
+  },
+
+  listCategories(){
+    return load(KEY_CATEGORIES)
+  },
+
+  saveCategories(categories){
+    save(KEY_CATEGORIES, categories)
+    return categories
+  },
+
+  getSystemSettings(){
+    return loadJson(KEY_SYSTEM_SETTINGS, {
+      systemName: 'Barangay Service & Complaint Management System',
+      contactEmail: 'brgy.mambog.ii@gmail.com'
+    })
+  },
+
+  saveSystemSettings(settings){
+    const existing = loadJson(KEY_SYSTEM_SETTINGS, {})
+    const merged = { ...existing, ...settings }
+    save(KEY_SYSTEM_SETTINGS, merged)
+    return merged
   },
 
   // =========================

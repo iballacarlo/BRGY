@@ -11,7 +11,12 @@ export function SettingsProvider({ children }){
   const { user } = useAuth()
   const [dark, setDark] = useState(false)
   const [contrast, setContrast] = useState(false)
-  const [fontSize, setFontSize] = useState('medium')
+  const [fontSize, setFontSize] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches) {
+      return 'small'
+    }
+    return 'medium'
+  })
   const [tts, setTts] = useState(false)
   const [screenReader, setScreenReader] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -30,7 +35,10 @@ export function SettingsProvider({ children }){
 
     setDark(saved.dark !== undefined ? saved.dark : false)
     setContrast(saved.contrast !== undefined ? saved.contrast : false)
-    setFontSize(saved.fontSize || 'medium')
+    setFontSize(saved.fontSize !== undefined
+      ? saved.fontSize
+      : (typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches ? 'small' : 'medium')
+    )
     setTts(saved.tts !== undefined ? saved.tts : false)
     setScreenReader(saved.screenReader !== undefined ? saved.screenReader : false)
     setLoaded(true)

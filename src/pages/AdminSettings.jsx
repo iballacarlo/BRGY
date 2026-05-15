@@ -1,15 +1,45 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import Button from '../components/Button'
 import '../styles/form.css'
-import { Settings, Tags, Save, RotateCcw } from 'lucide-react'
+import { Settings, Tags, Save, RotateCcw, Accessibility } from 'lucide-react'
+import { useSettings } from '../context/SettingsContext'
+import mockApi from '../api/mockApi'
+
+const DEFAULT_CATEGORIES = ['Noise', 'Garbage', 'Traffic']
+const DEFAULT_SYSTEM_NAME = 'Barangay Service & Complaint Management System'
+const DEFAULT_CONTACT_EMAIL = 'brgy.mambog.ii@gmail.com'
 
 export default function AdminSettings(){
-  const [categories, setCategories] = useState(['Noise', 'Garbage', 'Traffic'])
+  const {
+    dark, setDark,
+    contrast, setContrast,
+    fontSize, setFontSize,
+    tts, setTts,
+    screenReader, setScreenReader,
+    saveSettings,
+    resetSettings
+  } = useSettings()
+
+  const [categories, setCategories] = useState([])
   const [newCat, setNewCat] = useState('')
-  const [systemName, setSystemName] = useState('Barangay Service & Complaint Management System')
-  const [contactEmail, setContactEmail] = useState('brgy.mambog.ii@gmail.com')
+  const [systemName, setSystemName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [notice, setNotice] = useState('')
+
+  useEffect(() => {
+    setCategories(mockApi.listCategories())
+    const config = mockApi.getSystemSettings()
+    setSystemName(config.systemName || DEFAULT_SYSTEM_NAME)
+    setContactEmail(config.contactEmail || DEFAULT_CONTACT_EMAIL)
+  }, [])
+
+  useEffect(() => {
+    if(!notice) return
+    const timer = setTimeout(() => setNotice(''), 4000)
+    return () => clearTimeout(timer)
+  }, [notice])
 
   function addCategory(){
     const v = newCat.trim()
@@ -24,14 +54,27 @@ export default function AdminSettings(){
   }
 
   function resetDefaults(){
-    setCategories(['Noise', 'Garbage', 'Traffic'])
+    setCategories(DEFAULT_CATEGORIES)
     setNewCat('')
-    setSystemName('Barangay Service & Complaint Management System')
-    setContactEmail('brgy.mambog.ii@gmail.com')
+    setSystemName(DEFAULT_SYSTEM_NAME)
+    setContactEmail(DEFAULT_CONTACT_EMAIL)
+    resetSettings()
+    mockApi.saveCategories(DEFAULT_CATEGORIES)
+    mockApi.saveSystemSettings({
+      systemName: DEFAULT_SYSTEM_NAME,
+      contactEmail: DEFAULT_CONTACT_EMAIL
+    })
+    setNotice('System and accessibility settings reset to default.')
   }
 
   function save(){
-    alert('Settings saved (demo).')
+    mockApi.saveCategories(categories)
+    mockApi.saveSystemSettings({
+      systemName,
+      contactEmail
+    })
+    saveSettings()
+    setNotice('System and accessibility settings saved.')
   }
 
   return (
@@ -177,10 +220,104 @@ export default function AdminSettings(){
                 </div>
 
                 <div className="helper" style={{ marginTop: 10 }}>
-                  These categories will appear in the complaint form.
+                  These categories will appear in the complaint form across all resident devices.
                 </div>
               </div>
             </div>
+
+            <div className="form-head" style={{ marginTop: 32 }}>
+              <h2
+                className="form-title"
+                style={{ display: 'inline-flex', gap: 10, alignItems: 'center' }}
+              >
+                <Accessibility size={18} strokeWidth={2} />
+                Accessibility Settings
+              </h2>
+
+              <p className="form-sub">
+                Control dark mode, contrast, font size, and assistive features from the same admin settings page.
+              </p>
+            </div>
+
+            <div className="settings-grid">
+              <div className="setting-row">
+                <div className="setting-info">
+                  <div className="setting-title">Dark Mode</div>
+                  <div className="setting-desc">Switch to darker interface colors.</div>
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={dark}
+                    onChange={(e) => setDark(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+
+              <div className="setting-row">
+                <div className="setting-info">
+                  <div className="setting-title">High Contrast</div>
+                  <div className="setting-desc">Increase contrast for better readability.</div>
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={contrast}
+                    onChange={(e) => setContrast(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+
+              <div className="setting-row">
+                <div className="setting-info">
+                  <div className="setting-title">Text-to-Speech</div>
+                  <div className="setting-desc">Enable spoken feedback.</div>
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={tts}
+                    onChange={(e) => setTts(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+
+              <div className="setting-row">
+                <div className="setting-info">
+                  <div className="setting-title">Screen Reader Mode</div>
+                  <div className="setting-desc">Optimize layout for screen readers.</div>
+                </div>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={screenReader}
+                    onChange={(e) => setScreenReader(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+
+              <div className="font-size-section">
+                <div className="setting-title">Font Size</div>
+                <div className="font-size-options">
+                  {['small','medium','large','xlarge'].map(size => (
+                    <button
+                      key={size}
+                      type="button"
+                      className={`font-chip ${fontSize === size ? 'active' : ''}`}
+                      onClick={() => setFontSize(size)}
+                    >
+                      {size.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {notice && <div className="form-notice">{notice}</div>}
 
             <div className="form-actions">
               <Button type="button" variant="secondary" onClick={resetDefaults}>

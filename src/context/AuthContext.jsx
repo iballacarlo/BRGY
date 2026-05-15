@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import api from '../api/axios'
+import mockApi from '../api/mockApi'
 
 const AuthContext = createContext()
 
@@ -74,8 +75,54 @@ export function AuthProvider({ children }){
     setUser(null)
   }
 
+  async function updateProfile(data){
+    // data: { name, first_name, middle_name, last_name, suffix }
+    // Try backend first (existing app used /profile_update.php)
+    try{
+      const res = await fetch('/profile_update.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ name: data.name })
+      })
+
+      if(res.ok){
+        try{
+          const json = await res.json()
+          if(json && json.success && json.user){
+            setUser(json.user)
+            return { ok:true }
+          }
+        }catch{}
+        // If backend returned non-JSON or no user, still update local state
+        const merged = { ...user, ...data }
+        setUser(merged)
+        return { ok:true }
+      }
+    }catch(e){
+      // network error -> fallback to mock
+    }
+
+    // Fallback to mock API (localStorage)
+    if(user?.id){
+      const updated = mockApi.updateUser(user.id, {
+        name: data.name,
+        first_name: data.first_name,
+        middle_name: data.middle_name,
+        last_name: data.last_name,
+        suffix: data.suffix
+      })
+      if(updated){
+        setUser(updated)
+        return { ok:true }
+      }
+    }
+
+    return { ok:false, message: 'Failed to update profile' }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, updateProfile }}>
       {children}
     </AuthContext.Provider>
   )
