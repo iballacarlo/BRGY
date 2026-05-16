@@ -967,6 +967,32 @@ html.dark .font-chip.active{
   align-items: flex-start;
 }
 
+@media (max-width: 900px) and (orientation: portrait) {
+  .process-modal-grid-single{
+    grid-template-columns: 1fr;
+  }
+
+  .document-preview-shell-a4,
+  .document-edit-sidebar{
+    width: 100%;
+  }
+
+  .document-preview-a4{
+    max-width: 100%;
+    background-size: 220px auto;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .process-modal-grid-single{
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .document-preview-a4{
+    max-width: 100%;
+  }
+}
+
 .document-preview-a4{
   width: 100%;
   max-width: 380px;
@@ -976,6 +1002,7 @@ html.dark .font-chip.active{
   border-radius: 10px;
   background: #ffffff url('/src/assets/Bacoor.png') center center no-repeat;
   background-size: 350px auto;
+  background-blend-mode: normal;
   border: 2px solid rgb(200, 200, 200);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -988,6 +1015,22 @@ html.dark .font-chip.active{
   position: relative;
 }
 
+.document-preview-a4 *{
+  color: #111827 !important;
+}
+
+html.dark .document-preview-a4,
+html.high-contrast .document-preview-a4{
+  background: #ffffff url('/src/assets/Bacoor.png') center center no-repeat !important;
+  background-size: 350px auto !important;
+  border-color: #999999 !important;
+}
+
+html.dark .document-preview-a4 *,
+html.high-contrast .document-preview-a4 *{
+  color: #111827 !important;
+}
+
 .document-preview-a4::before{
   content: '';
   position: absolute;
@@ -995,9 +1038,39 @@ html.dark .font-chip.active{
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.72);
   pointer-events: none;
   z-index: 1;
+}
+
+html.dark .document-preview-a4::before,
+html.high-contrast .document-preview-a4::before{
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+
+html.dark .sidebar-card,
+html.high-contrast .sidebar-card{
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(0,0,0,0.15) !important;
+}
+
+html.dark .sidebar-title,
+html.high-contrast .sidebar-title,
+html.dark .form-label,
+html.high-contrast .form-label{
+  color: #111827 !important;
+}
+
+html.dark .ui-input,
+html.high-contrast .ui-input{
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-color: rgba(0,0,0,0.18) !important;
+}
+
+html.dark .ui-input::placeholder,
+html.high-contrast .ui-input::placeholder{
+  color: rgba(17,17,17,0.55) !important;
 }
 
 .document-edit-sidebar{

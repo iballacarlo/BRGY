@@ -374,6 +374,7 @@ export default function ManageDocuments(){
                       <td>
                         <div className="table-actions-inline">
                           <Button
+                            className="process-btn"
                             onClick={()=>handleProcessRequest(it)}
                           >
                             Process

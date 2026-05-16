@@ -40,6 +40,28 @@
   background: var(--surface-2);
 }
 
+.btn.process-btn{
+  background: #2563eb;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.btn.process-btn:hover{
+  background: #1d4ed8;
+}
+
+html.dark .btn.process-btn,
+html.high-contrast .btn.process-btn{
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+html.dark .btn.process-btn:hover,
+html.high-contrast .btn.process-btn:hover{
+  background: #1d4ed8 !important;
+}
+
 .btn.danger{
   background: var(--danger-color);
   color: #ffffff;
