@@ -27,6 +27,59 @@ function splitName(fullName){
   return { first, middle, last, suffix }
 }
 
+function formatProfileAddress(raw){
+  const address = (raw || '').trim()
+  if(!address) return ''
+
+  const parts = address.split(/\s*,\s*/).filter(Boolean)
+  let phase = ''
+  let block = ''
+  let lot = ''
+  let street = ''
+
+  parts.forEach(segment => {
+    const value = segment.trim()
+    const lower = value.toLowerCase()
+
+    if(/^(phase|ph)\b/.test(lower)){
+      phase = value
+      return
+    }
+
+    const blockMatch = value.match(/^(?:block|blk\.?)(?:\s*[:\-]?\s*)(.*)$/i)
+    if(blockMatch){
+      block = blockMatch[1].trim() || block
+      return
+    }
+
+    const lotMatch = value.match(/^(?:lot)(?:\s*[:\-]?\s*)(.*)$/i)
+    if(lotMatch){
+      lot = lotMatch[1].trim() || lot
+      return
+    }
+
+    if(/^(brgy|barangay|bacoor|cavite|philippines|mambog)/i.test(lower)){
+      return
+    }
+
+    if(!street){
+      street = value
+    }
+  })
+
+  const output = []
+  if(block) output.push(`Blk. ${block}`)
+  if(lot) output.push(`Lot ${lot}`)
+  if(street) output.push(street)
+  if(phase) output.push(phase)
+
+  if(output.length === 0){
+    return `${address}, Brgy. Mambog II, Bacoor, 4102 Cavite, PHILIPPINES`
+  }
+
+  return `${output.join(', ')}, Brgy. Mambog II, Bacoor, 4102 Cavite, PHILIPPINES`
+}
+
 export default function Profile(){
 
   const { user } = useAuth()
@@ -37,13 +90,19 @@ export default function Profile(){
     const middle = user?.middle_name || user?.middleName || user?.middle || parsed.middle
     const last = user?.last_name || user?.lastName || user?.lname || parsed.last
     const suffix = user?.suffix || user?.suf || parsed.suffix
-    return { first, middle, last, suffix }
+    const rawAddress = user?.address || user?.location || ''
+    const address = formatProfileAddress(rawAddress)
+    return { first, middle, last, suffix, address }
   }, [user])
 
   const [first,setFirst] = useState(initial.first)
   const [middle,setMiddle] = useState(initial.middle)
   const [last,setLast] = useState(initial.last)
   const [suffix,setSuffix] = useState(initial.suffix)
+  const [address,setAddress] = useState(initial.address)
+  const [email,setEmail] = useState(user?.email || user?.username || mockApi.getCurrentUser()?.email || '')
+  const [password,setPassword] = useState('********')
+  const [passwordDirty,setPasswordDirty] = useState(false)
 
   // keep fields in sync when user/context updates
   React.useEffect(() => {
@@ -51,12 +110,16 @@ export default function Profile(){
     setMiddle(initial.middle)
     setLast(initial.last)
     setSuffix(initial.suffix)
-  }, [initial.first, initial.middle, initial.last, initial.suffix])
+    setAddress(initial.address)
+    if(!passwordDirty) setPassword('********')
+  }, [initial.first, initial.middle, initial.last, initial.suffix, initial.address, passwordDirty])
+
+  React.useEffect(() => {
+    setEmail(user?.email || user?.username || mockApi.getCurrentUser()?.email || '')
+  }, [user])
 
   const [msg,setMsg] = useState('')
   const [saving,setSaving] = useState(false)
-
-  const email = user?.email || user?.username || mockApi.getCurrentUser()?.email || ''
 
   const { updateProfile } = useAuth()
 
@@ -73,13 +136,28 @@ export default function Profile(){
     setSaving(true)
 
     try{
-      const res = await updateProfile({
+      const payload = {
         name: fullName,
         first_name: first,
         middle_name: middle,
         last_name: last,
-        suffix: suffix
-      })
+        suffix: suffix,
+        address: address.trim()
+      }
+
+      if(passwordDirty){
+        if(!password.trim()){
+          setMsg('Password cannot be blank.')
+          setSaving(false)
+          return
+        }
+
+        if(password !== '********'){
+          payload.password = password
+        }
+      }
+
+      const res = await updateProfile(payload)
 
       if(!res.ok){
         setMsg(res.message || 'Failed to save.')
@@ -151,11 +229,34 @@ export default function Profile(){
                 <InputField
                   label="Email"
                   value={email}
-                  onChange={()=>{}}
+                  readOnly
+                />
+
+                <InputField
+                  label="Address"
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
+                />
+
+                <InputField
+                  label="Password"
+                  type="password"
+                  allowToggle
+                  value={password}
+                  onFocus={() => {
+                    if(!passwordDirty && password === '********') setPassword('')
+                  }}
+                  onBlur={() => {
+                    if(!passwordDirty && password === '') setPassword('********')
+                  }}
+                  onChange={e => {
+                    setPassword(e.target.value)
+                    setPasswordDirty(true)
+                  }}
                 />
 
                 <p className="muted">
-                  Email cannot be changed.
+                  Password is hidden for security. Leave it as is to keep your current password.
                 </p>
 
                 {msg && (

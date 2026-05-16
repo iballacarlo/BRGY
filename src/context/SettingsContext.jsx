@@ -11,12 +11,7 @@ export function SettingsProvider({ children }){
   const { user } = useAuth()
   const [dark, setDark] = useState(false)
   const [contrast, setContrast] = useState(false)
-  const [fontSize, setFontSize] = useState(() => {
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches) {
-      return 'small'
-    }
-    return 'medium'
-  })
+  const [fontSize, setFontSize] = useState('small')
   const [tts, setTts] = useState(false)
   const [screenReader, setScreenReader] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -35,10 +30,7 @@ export function SettingsProvider({ children }){
 
     setDark(saved.dark !== undefined ? saved.dark : false)
     setContrast(saved.contrast !== undefined ? saved.contrast : false)
-    setFontSize(saved.fontSize !== undefined
-      ? saved.fontSize
-      : (typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches ? 'small' : 'medium')
-    )
+    setFontSize(saved.fontSize !== undefined ? saved.fontSize : 'small')
     setTts(saved.tts !== undefined ? saved.tts : false)
     setScreenReader(saved.screenReader !== undefined ? saved.screenReader : false)
     setLoaded(true)
@@ -87,7 +79,7 @@ export function SettingsProvider({ children }){
   const resetSettings = () => {
     setDark(false)
     setContrast(false)
-    setFontSize('medium')
+    setFontSize('small')
     setTts(false)
     setScreenReader(false)
     // Save reset state to localStorage
@@ -96,7 +88,7 @@ export function SettingsProvider({ children }){
       JSON.stringify({
         dark: false,
         contrast: false,
-        fontSize: 'medium',
+        fontSize: 'small',
         tts: false,
         screenReader: false
       })

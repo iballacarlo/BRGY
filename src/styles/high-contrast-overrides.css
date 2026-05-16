@@ -1,0 +1,156 @@
+/* High Contrast should override Dark Mode when both settings are enabled */
+html.high-contrast.dark,
+html.dark.high-contrast {
+  --bg: #000000 !important;
+  --card-bg: #0a0a0a !important;
+  --surface-2: #141414 !important;
+  --text-color: #ffffff !important;
+  --muted-color: #f3f4f6 !important;
+  --border-color: rgba(255,255,255,0.85) !important;
+  --shadow: 0 0 0 2px rgba(255,255,255,0.22) !important;
+  --primary-color: #ffd60a !important;
+  --primary-soft: rgba(255, 214, 10, 0.18) !important;
+  --danger-color: #ff6b6b !important;
+  --danger-soft: rgba(255, 107, 107, 0.18) !important;
+}
+
+html.high-contrast.dark body,
+html.dark.high-contrast body,
+html.high-contrast.dark .app-shell,
+html.dark.high-contrast .app-shell,
+html.high-contrast.dark .main-area,
+html.dark.high-contrast .main-area,
+html.high-contrast.dark main,
+html.dark.high-contrast main,
+html.high-contrast.dark .card,
+html.dark.high-contrast .card,
+html.high-contrast.dark .table-wrap,
+html.dark.high-contrast .table-wrap,
+html.high-contrast.dark .form-card,
+html.dark.high-contrast .form-card,
+html.high-contrast.dark .history-card,
+html.dark.high-contrast .history-card,
+html.high-contrast.dark .stat-tile,
+html.dark.high-contrast .stat-tile,
+html.high-contrast.dark .recent,
+html.dark.high-contrast .recent,
+html.high-contrast.dark .modal-card,
+html.dark.high-contrast .modal-card,
+html.high-contrast.dark .sidebar,
+html.dark.high-contrast .sidebar,
+html.high-contrast.dark .login-card,
+html.dark.high-contrast .login-card,
+html.high-contrast.dark .login-info,
+html.dark.high-contrast .login-info,
+html.high-contrast.dark .login-topbar,
+html.dark.high-contrast .login-topbar,
+html.high-contrast.dark .settings-panel,
+html.dark.high-contrast .settings-panel,
+html.high-contrast.dark .register-col,
+html.dark.high-contrast .register-col {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+html.high-contrast.dark input,
+html.dark.high-contrast input,
+html.high-contrast.dark select,
+html.dark.high-contrast select,
+html.high-contrast.dark textarea,
+html.dark.high-contrast textarea {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.85) !important;
+}
+
+html.high-contrast.dark input::placeholder,
+html.dark.high-contrast input::placeholder,
+html.high-contrast.dark textarea::placeholder,
+html.dark.high-contrast textarea::placeholder {
+  color: #e5e7eb !important;
+  opacity: 1 !important;
+}
+
+html.high-contrast.dark a,
+html.dark.high-contrast a {
+  color: var(--primary-color) !important;
+}
+
+html.high-contrast.dark button,
+html.dark.high-contrast button {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+html.high-contrast.dark .font-chip,
+html.dark.high-contrast .font-chip {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+html.high-contrast.dark .font-chip.active,
+html.dark.high-contrast .font-chip.active {
+  background: #ffd60a !important;
+  color: #000000 !important;
+  border-color: #ffd60a !important;
+  box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.22) !important;
+}
+
+html.high-contrast.dark .switch input:focus-visible + .slider,
+html.dark.high-contrast .switch input:focus-visible + .slider {
+  outline: 3px solid var(--primary-color) !important;
+  outline-offset: 3px !important;
+}
+
+html.high-contrast.dark .btn,
+html.dark.high-contrast .btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+html.high-contrast.dark .btn:hover,
+html.dark.high-contrast .btn:hover {
+  background: #f3f4f6 !important;
+}
+
+html.high-contrast.dark .btn.secondary,
+html.dark.high-contrast .btn.secondary {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+html.high-contrast.dark .btn.secondary:hover,
+html.dark.high-contrast .btn.secondary:hover {
+  background: #1a1a1a !important;
+}
+
+html.high-contrast.dark .btn.danger,
+html.dark.high-contrast .btn.danger {
+  background: #ff6b6b !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+html.high-contrast.dark .chip,
+html.dark.high-contrast .chip {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html.high-contrast.dark .chip:hover,
+html.dark.high-contrast .chip:hover {
+  background: #f3f4f6 !important;
+}
+
+html.high-contrast.dark .chip.active,
+html.dark.high-contrast .chip.active {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 4px var(--primary-soft) !important;
+}

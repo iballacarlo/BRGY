@@ -56,6 +56,7 @@ function seed(){
         last_name: '',
         email: 'admin@gmail.com',
         password: '123',
+        address: 'Barangay Hall, Mambog II',
         role: 'admin'
       },
       {
@@ -65,6 +66,7 @@ function seed(){
         last_name: '',
         email: 'carlo@gmail.com',
         password: '123',
+        address: 'Phase 1, Block 5, Lot 12, Mambog II',
         role: 'resident'
       }
     ]
@@ -141,7 +143,10 @@ const api = {
   },
 
   getCurrentUser(){
-    const token = localStorage.getItem('token')
+    let token = localStorage.getItem('token')
+    if(!token){
+      token = sessionStorage.getItem('token')
+    }
     if(!token) return null
 
     const id = parseInt(token.split('_')[1], 10)

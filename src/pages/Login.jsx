@@ -17,12 +17,15 @@ export default function Login(){
     fontSize, setFontSize
   } = useSettings()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState(() => localStorage.getItem('remember_email') || '')
+  const [password, setPassword] = useState(() => localStorage.getItem('remember_password') || '')
+  const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem('remember_email') || localStorage.getItem('remember_password')))
   const [errors, setErrors] = useState({})
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   const panelRef = useRef(null)
+
+  const passwordAutoComplete = rememberMe ? 'current-password' : 'new-password'
 
   function validate(){
     const e = {}
@@ -38,9 +41,17 @@ export default function Login(){
     e.preventDefault()
     if(!validate()) return
 
-    const res = await login(email, password)
+    const res = await login(email, password, rememberMe)
 
     if(res.ok){
+      if(rememberMe){
+        localStorage.setItem('remember_email', email.trim())
+        localStorage.setItem('remember_password', password)
+      } else {
+        localStorage.removeItem('remember_email')
+        localStorage.removeItem('remember_password')
+      }
+
       const role = res.role || (await (await fetch('/me')).json())?.role
       if(role === 'staff' || role === 'admin') navigate('/admin')
       else navigate('/dashboard')
@@ -141,6 +152,7 @@ export default function Login(){
                 <label className="switch">
                   <input
                     type="checkbox"
+                    aria-label={contrast ? 'Disable high contrast mode' : 'Enable high contrast mode'}
                     checked={contrast}
                     onChange={(e) => setContrast(e.target.checked)}
                   />
@@ -157,6 +169,7 @@ export default function Login(){
                 <label className="switch">
                   <input
                     type="checkbox"
+                    aria-label={dark ? 'Disable dark mode' : 'Enable dark mode'}
                     checked={dark}
                     onChange={(e) => setDark(e.target.checked)}
                   />
@@ -224,7 +237,7 @@ export default function Login(){
           <form className="login-card" onSubmit={handleLogin} aria-labelledby="loginTitle" noValidate>
             <div className="login-body">
               <div className="card-head">
-                <h2 id="loginTitle" className="card-title">Welcome back</h2>
+                <h2 id="loginTitle" className="card-title">Welcome</h2>
                 <p className="card-sub">Sign in to continue to your account.</p>
               </div>
 
@@ -235,7 +248,7 @@ export default function Login(){
                 onChange={e => setEmail(e.target.value)}
                 error={errors.email}
                 placeholder="Enter your email"
-                autoComplete="email"
+                autoComplete="username"
               />
 
               <InputField
@@ -246,12 +259,16 @@ export default function Login(){
                 error={errors.password}
                 allowToggle
                 placeholder="Enter your password"
-                autoComplete="current-password"
+                autoComplete={passwordAutoComplete}
               />
 
               <div className="login-row">
                 <label className="remember">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={e => setRememberMe(e.target.checked)}
+                  />
                   <span>Remember me</span>
                 </label>
 

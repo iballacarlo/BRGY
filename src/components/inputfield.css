@@ -63,6 +63,7 @@
   right:10px;
   top:50%;
   transform:translateY(-50%);
+  z-index:2;
 
   height:32px;
   padding:0 12px;
@@ -82,11 +83,24 @@
   align-items:center;
   justify-content:center;
 
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 
 .showbtn:hover{
   background: color-mix(in srgb, var(--surface-2) 70%, var(--primary-color) 10%);
+}
+
+html.dark .showbtn,
+html.high-contrast .showbtn{
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.3);
+}
+
+html.dark .showbtn:hover,
+html.high-contrast .showbtn:hover{
+  background: color-mix(in srgb, var(--primary-color) 80%, #ffffff 20%);
 }
 
 /* focus */

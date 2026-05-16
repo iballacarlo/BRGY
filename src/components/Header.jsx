@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSettings } from '../context/SettingsContext'
 import { useAuth } from '../context/AuthContext'
+import mockApi from '../api/mockApi'
 import './header.css'
 
 export default function Header(){
@@ -66,7 +67,7 @@ export default function Header(){
   const firstName = user?.first_name || (user?.name || '').split(' ')[0] || ''
   const initials = firstName
     ? firstName[0].toUpperCase()
-    : (user?.email ? user.email[0].toUpperCase() : 'U')
+    : ((user?.email || user?.username) ? (user?.email || user?.username)[0].toUpperCase() : 'U')
 
   // parse name parts for avatar modal display
   function parseName(obj){
@@ -86,7 +87,24 @@ export default function Header(){
     })()
     return { first, middle, last, suffix }
   }
+  const profileEmail =
+    user?.email ||
+    user?.username ||
+    user?.user_email ||
+    user?.email_address ||
+    mockApi.getCurrentUser()?.email ||
+    (() => {
+      try {
+        return JSON.parse(localStorage.getItem('mock_current_user') || '{}')?.email || ''
+      } catch {
+        return ''
+      }
+    })()
+
   const nameParts = parseName(user || {})
+  const fullName = [nameParts.first, nameParts.middle, nameParts.last, nameParts.suffix]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <header className="top-header">
@@ -161,11 +179,8 @@ export default function Header(){
           {menuOpen && (
             <div className="avatar-menu" role="menu" aria-label="Account menu">
               <div className="avatar-menu-head">
-                <div className="avatar-menu-name">{nameParts.first || ''}</div>
-                <div className="avatar-menu-name">{nameParts.middle || ''}</div>
-                <div className="avatar-menu-name">{nameParts.last || ''}</div>
-                {nameParts.suffix ? <div className="avatar-menu-name">{nameParts.suffix}</div> : null}
-                <div className="avatar-menu-email">{user?.email || ''}</div>
+                <div className="avatar-menu-name">{fullName}</div>
+                <div className="avatar-menu-email">{profileEmail}</div>
               </div>
 
               <button type="button" className="avatar-item" role="menuitem" onClick={goProfile}>

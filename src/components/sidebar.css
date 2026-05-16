@@ -13,6 +13,7 @@
 .sidebar{
   width: var(--sidebar-w);
   height:100vh;
+  height:100dvh;
   position:fixed;
   top:0;
   left:0;  bottom:0;
@@ -320,6 +321,8 @@ html.sidebar-collapsed .sidebar .logout{
 @media(max-width:700px){
   .sidebar{
     width: var(--sidebar-w);
+    height: calc(100vh - env(safe-area-inset-top, 0));
+    height: calc(100dvh - env(safe-area-inset-top, 0));
   }
   
   html.sidebar-collapsed .sidebar{
@@ -363,12 +366,20 @@ html.sidebar-collapsed .sidebar .logout{
     padding-top: 10px;
     padding-left: 8px;
     padding-right: 8px;
-    padding-bottom: 14px;
+    padding-bottom: 0;
     overflow-y:auto;
+    max-height: calc(100% - var(--layout-header-h) - env(safe-area-inset-bottom, 0));
   }
   
   .sidebar .logout{
+    position: sticky;
+    bottom: env(safe-area-inset-bottom, 0);
+    z-index: 1;
+    margin-top: auto;
     padding: 12px 8px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-color);
   }
 }
 

@@ -109,6 +109,7 @@ export default function DocumentRequest(){
         setBlock('')
         setLot('')
         setPurpose('')
+        nav('/document-history')
       } else {
         alert('Error: ' + res.data.message)
       }

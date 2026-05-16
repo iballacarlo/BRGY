@@ -9,17 +9,19 @@ export function AuthProvider({ children }){
   const [loading, setLoading] = useState(true)
 
   useEffect(()=>{
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token')
     if(token){
       api.get('/me').then(res=>{
         if(res.data && res.data.success){
           setUser(res.data.user)
         } else {
           localStorage.removeItem('token')
+          sessionStorage.removeItem('token')
         }
         setLoading(false)
       }).catch(()=>{
         localStorage.removeItem('token')
+        sessionStorage.removeItem('token')
         setLoading(false)
       })
     } else {
@@ -27,13 +29,24 @@ export function AuthProvider({ children }){
     }
   },[])
 
-  async function login(email, password){
+  async function login(email, password, remember = true){
     try{
       const res = await api.post('/login', { email, password })
       if(res.data && res.data.success){
-        localStorage.setItem('token', res.data.token)
-        setUser(res.data.user)
-        return { ok:true, role: res.data.user?.role }
+        if(remember){
+          sessionStorage.removeItem('token')
+          localStorage.setItem('token', res.data.token)
+        } else {
+          localStorage.removeItem('token')
+          sessionStorage.setItem('token', res.data.token)
+        }
+        const loggedUser = {
+          ...res.data.user,
+          email: res.data.user?.email || email,
+          username: res.data.user?.username || email
+        }
+        setUser(loggedUser)
+        return { ok:true, role: loggedUser?.role }
       }
       return { ok:false, message: res.data.message || 'Login failed' }
     }catch(err){
@@ -50,7 +63,12 @@ export function AuthProvider({ children }){
       const res = await api.post('/register', data)
       if(res.data && res.data.success){
         localStorage.setItem('token', res.data.token)
-        setUser(res.data.user)
+        const registeredUser = {
+          ...res.data.user,
+          email: res.data.user?.email || data.email,
+          username: res.data.user?.username || data.email
+        }
+        setUser(registeredUser)
         return { ok:true }
       }
       return { ok:false, message: res.data.message || 'Register failed' }
@@ -72,18 +90,19 @@ export function AuthProvider({ children }){
       }
     }
     localStorage.removeItem('token')
+    sessionStorage.removeItem('token')
     setUser(null)
   }
 
   async function updateProfile(data){
-    // data: { name, first_name, middle_name, last_name, suffix }
+    // data: { name, first_name, middle_name, last_name, suffix, address?, password? }
     // Try backend first (existing app used /profile_update.php)
     try{
       const res = await fetch('/profile_update.php',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         credentials:'include',
-        body: JSON.stringify({ name: data.name })
+        body: JSON.stringify(data)
       })
 
       if(res.ok){
@@ -106,11 +125,7 @@ export function AuthProvider({ children }){
     // Fallback to mock API (localStorage)
     if(user?.id){
       const updated = mockApi.updateUser(user.id, {
-        name: data.name,
-        first_name: data.first_name,
-        middle_name: data.middle_name,
-        last_name: data.last_name,
-        suffix: data.suffix
+        ...data
       })
       if(updated){
         setUser(updated)

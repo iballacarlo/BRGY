@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { SettingsProvider } from './context/SettingsContext'
 import './styles/variables.css'
 import './styles/global.css'
+import './styles/high-contrast-overrides.css'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

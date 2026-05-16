@@ -97,6 +97,7 @@ export default function AccessibilitySettings(){
                 <label className="switch">
                   <input
                     type="checkbox"
+                    aria-label={dark ? 'Disable dark mode' : 'Enable dark mode'}
                     checked={dark}
                     onChange={e => setDark(e.target.checked)}
                   />
@@ -112,6 +113,7 @@ export default function AccessibilitySettings(){
                 <label className="switch">
                   <input
                     type="checkbox"
+                    aria-label={contrast ? 'Disable high contrast mode' : 'Enable high contrast mode'}
                     checked={contrast}
                     onChange={e => setContrast(e.target.checked)}
                   />
@@ -127,6 +129,7 @@ export default function AccessibilitySettings(){
                 <label className="switch">
                   <input
                     type="checkbox"
+                    aria-label={tts ? 'Disable text to speech' : 'Enable text to speech'}
                     checked={tts}
                     onChange={e => setTts(e.target.checked)}
                   />
@@ -142,6 +145,7 @@ export default function AccessibilitySettings(){
                 <label className="switch">
                   <input
                     type="checkbox"
+                    aria-label={screenReader ? 'Disable screen reader mode' : 'Enable screen reader mode'}
                     checked={screenReader}
                     onChange={e => setScreenReader(e.target.checked)}
                   />
