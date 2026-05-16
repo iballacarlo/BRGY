@@ -1055,22 +1055,13 @@ html.high-contrast .sidebar-card{
 }
 
 html.dark .sidebar-title,
-html.high-contrast .sidebar-title,
+html.high-contrast .sidebar-title{
+  color: #111827 !important;
+}
+
 html.dark .form-label,
 html.high-contrast .form-label{
-  color: #111827 !important;
-}
-
-html.dark .ui-input,
-html.high-contrast .ui-input{
-  background: #ffffff !important;
-  color: #111827 !important;
-  border-color: rgba(0,0,0,0.18) !important;
-}
-
-html.dark .ui-input::placeholder,
-html.high-contrast .ui-input::placeholder{
-  color: rgba(17,17,17,0.55) !important;
+  color: #f9fafb !important;
 }
 
 .document-edit-sidebar{
