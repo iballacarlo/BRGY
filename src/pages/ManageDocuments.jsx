@@ -10,24 +10,13 @@ import mockApi from '../api/mockApi'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import BacoorLogo from '../assets/Bacoor.png'
 
-const REQUEST_DOC_TYPES = [
-  'Barangay Clearance',
-  'Business Permit',
-  'Residency Certificate',
-  'Certificate of Indigency'
-]
-
 export default function ManageDocuments(){
 
   const [items,setItems] = useState([])
   const [loading,setLoading] = useState(true)
   const [error,setError] = useState(null)
   const [requestType, setRequestType] = useState('Barangay Clearance')
-  const [documentStatuses, setDocumentStatuses] = useState([
-    { name: 'Barangay Clearance', status: 'Active' },
-    { name: 'Business Permit', status: 'Active' },
-    { name: 'Residency Certificate', status: 'Disabled' }
-  ])
+  const [documentStatuses, setDocumentStatuses] = useState([])
   const [processingRequest, setProcessingRequest] = useState(null)
   const [documentFields, setDocumentFields] = useState({
     name: '',
@@ -40,9 +29,17 @@ export default function ManageDocuments(){
   })
 
   const toggleDocumentStatus = (idx) => {
+    const nextStatus = documentStatuses[idx].status === 'Active' ? 'Disabled' : 'Active'
+    const result = mockApi.updateDocTypeStatus(documentStatuses[idx].name, nextStatus)
+
+    if(!result.success){
+      alert(result.message || 'Unable to update document type status')
+      return
+    }
+
     setDocumentStatuses(prev => prev.map((doc, i) =>
       i === idx
-        ? { ...doc, status: doc.status === 'Active' ? 'Disabled' : 'Active' }
+        ? { ...doc, status: nextStatus }
         : doc
     ))
   }
@@ -58,6 +55,14 @@ export default function ManageDocuments(){
     }
 
     setLoading(false)
+  }
+
+  function loadDocumentTypes(){
+    const types = mockApi.listDocTypes() || []
+    setDocumentStatuses(types)
+    if(types.length && !types.some(type => type.name === requestType)){
+      setRequestType(types[0].name)
+    }
   }
 
   async function submitRequest(){
@@ -79,7 +84,10 @@ export default function ManageDocuments(){
     }
   }
 
-  useEffect(()=>{ load() }, [])
+  useEffect(()=>{
+    load()
+    loadDocumentTypes()
+  }, [])
 
   async function handleUpdate(id){
     const item = items.find(i=>i.request_id===id)
@@ -350,6 +358,28 @@ export default function ManageDocuments(){
             <div className="empty-state">Loading documents...</div>
           ) : (
             <>
+            <div className="form-card">
+              <div className="form-head">
+                <h2 className="form-title">Document Types</h2>
+                <p className="form-sub">Enable or disable the document types available for residents to request.</p>
+              </div>
+              <div className="settings-grid">
+                {documentStatuses.map((doc, idx) => (
+                  <div key={doc.name} className="setting-row">
+                    <div className="setting-info">
+                      <div className="setting-title">{doc.name}</div>
+                      <div className="setting-desc">Status: {doc.status}</div>
+                    </div>
+                    <Button
+                      variant={doc.status === 'Active' ? 'secondary' : 'danger'}
+                      onClick={() => toggleDocumentStatus(idx)}
+                    >
+                      {doc.status === 'Active' ? 'Disable' : 'Enable'}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="table-wrap">
               <table>
                 <thead>

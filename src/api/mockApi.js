@@ -3,6 +3,7 @@
 const KEY_USERS = 'mock_users'
 const KEY_COMPLAINTS = 'mock_complaints'
 const KEY_DOCS = 'mock_docs'
+const KEY_DOCUMENT_TYPES = 'mock_document_types'
 const KEY_CATEGORIES = 'mock_categories'
 const KEY_SYSTEM_SETTINGS = 'mock_system_settings'
 
@@ -76,6 +77,12 @@ function seed(){
   // Only initialize empty arrays if they don't exist - don't clear existing data!
   if(!localStorage.getItem(KEY_COMPLAINTS)) save(KEY_COMPLAINTS, [])
   if(!localStorage.getItem(KEY_DOCS)) save(KEY_DOCS, [])
+  if(!localStorage.getItem(KEY_DOCUMENT_TYPES)) save(KEY_DOCUMENT_TYPES, [
+    { name: 'Barangay Clearance', status: 'Active' },
+    { name: 'Certificate of Residency', status: 'Active' },
+    { name: 'Certificate of Indigency', status: 'Active' },
+    { name: 'Business Permit', status: 'Active' }
+  ])
   if(!localStorage.getItem(KEY_CATEGORIES)) save(KEY_CATEGORIES, ['Noise', 'Garbage', 'Traffic'])
   if(!localStorage.getItem(KEY_SYSTEM_SETTINGS)) save(KEY_SYSTEM_SETTINGS, {
     systemName: 'Barangay Service & Complaint Management System',
@@ -268,6 +275,25 @@ const api = {
   // =========================
   listDocs(){
     return load(KEY_DOCS)
+  },
+
+  listDocTypes(){
+    return load(KEY_DOCUMENT_TYPES)
+  },
+
+  getActiveDocTypes(){
+    return load(KEY_DOCUMENT_TYPES).filter(dt => dt.status === 'Active')
+  },
+
+  updateDocTypeStatus(name, status){
+    const list = load(KEY_DOCUMENT_TYPES)
+    const idx = list.findIndex(item => item.name === name)
+    if(idx === -1){
+      return { success:false, message:'Document type not found' }
+    }
+    list[idx] = { ...list[idx], status }
+    save(KEY_DOCUMENT_TYPES, list)
+    return { success:true, data: list[idx] }
   },
 
   listDocsByUser(userId){

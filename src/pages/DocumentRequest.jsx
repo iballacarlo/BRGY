@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import Button from '../components/Button'
@@ -9,14 +9,9 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { addressData } from '../data/addressData'
 import { useNavigate } from 'react-router-dom'
 
-const DOC_TYPES = [
-  'Barangay Clearance',
-  'Certificate of Residency',
-  'Certificate of Indigency',
-]
-
 export default function DocumentRequest(){
-  const [type, setType] = useState('Barangay Clearance')
+  const [type, setType] = useState('')
+  const [docTypes, setDocTypes] = useState([])
   const [purpose, setPurpose] = useState('')
   const [name, setName] = useState('')
   const [birthdate, setBirthdate] = useState('')
@@ -36,6 +31,17 @@ export default function DocumentRequest(){
 
   const nav = useNavigate()
 
+  useEffect(() => {
+    const activeTypes = mockApi.listDocTypes()
+      .filter(dt => dt.status === 'Active')
+      .map(dt => dt.name)
+
+    setDocTypes(activeTypes)
+    if(activeTypes.length){
+      setType(activeTypes[0])
+    }
+  }, [])
+
   function validate(){
     const e = {}
     if(!name.trim()) e.name = 'Name is required'
@@ -45,7 +51,8 @@ export default function DocumentRequest(){
     if(!street.trim()) e.street = 'Street is required'
     if(!block.trim()) e.block = 'Block is required'
     if(!lot.trim()) e.lot = 'Lot is required'
-    if(!type) e.type = 'Document type is required'
+    if(!docTypes.length) e.type = 'No active document types are currently available.'
+    else if(!type) e.type = 'Document type is required'
     if(!purpose.trim()) e.purpose = 'Purpose is required'
     setErrors(e)
     return Object.keys(e).length === 0
@@ -297,17 +304,21 @@ export default function DocumentRequest(){
               </label>
               <div className="form-field">
                 <div className={`type-chips ${errors.type ? 'type-chips-error' : ''}`} role="group" aria-label="Document type">
-                  {DOC_TYPES.map(t => (
-                    <button
-                      key={t}
-                      type="button"
-                      className={`type-chip ${type === t ? 'active' : ''}`}
-                      onClick={() => onPickType(t)}
-                      aria-pressed={type === t}
-                    >
-                      {t}
-                    </button>
-                  ))}
+                  {docTypes.length > 0 ? (
+                    docTypes.map(t => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`type-chip ${type === t ? 'active' : ''}`}
+                        onClick={() => onPickType(t)}
+                        aria-pressed={type === t}
+                      >
+                        {t}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="field-error">No active document types are currently available.</div>
+                  )}
                 </div>
                 {errors.type && <div className="field-error">{errors.type}</div>}
               </div>
@@ -328,7 +339,7 @@ export default function DocumentRequest(){
             </div>
 
             <div className="form-actions">
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={!docTypes.length}>Submit</Button>
             </div>
           </form>
 
